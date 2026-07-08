@@ -246,8 +246,8 @@ create policy artigos_admin_all on artigos_conhecimento for all
 -- ============================================================
 
 insert into projetos (nome, dominios_email, sla_resposta_minutos, sla_resolucao_minutos) values
-  ('Cúria', array['arquidiocesebsb.org.br'], 120, 240),
+  ('Cúria', array['arquidiocesedebrasilia.org.br'], 120, 240),
   ('Seminário', array['seminario.org.br'], null, null);
 
--- NOTA: os domínios acima são placeholders — confirmar o domínio real de
--- e-mail institucional de cada contrato antes de ir para produção.
+-- NOTA: o domínio do Seminário ainda é um placeholder — confirmar o domínio
+-- real de e-mail institucional antes de ir para produção.
