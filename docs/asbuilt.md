@@ -7,20 +7,20 @@
 ## Roadmap de Implementação
 
 ### 🔵 FASE 01: FUNDAÇÃO
-**Status:** 🟡 Em andamento
-**Progresso:** 6/8 tarefas (75%)
+**Status:** ✅ Concluída
+**Progresso:** 8/8 tarefas (100%)
 
 #### Tarefas:
 - [x] Setup projeto Next.js (App Router) — Next.js 16.2.10, TypeScript, Tailwind v4
-- [x] Configurar Supabase (projeto dedicado criado por Rafael; migration `supabase/migrations/0001_init.sql` escrita — **falta aplicar**, ver bloqueio abaixo)
+- [x] Configurar Supabase (projeto dedicado; migration `supabase/migrations/0001_init.sql` aplicada em produção)
 - [x] Configurar Vercel (projeto `hubtech-itsm` linkado, GitHub integrado, env vars de produção/preview/development configuradas)
 - [x] GitFlow (`dev`, `hml`, `main`) no repo `hubtechoficial/hubtech-itsm` — 3 branches criadas e empurradas
 - [x] Aplicar design tokens (design-system.json / design-tokens.css) — cores, Space Grotesk + Inter aplicados em `globals.css` e `layout.tsx`
 - [x] Autenticação via Supabase Auth (usuário/senha) + recuperação de senha — telas `/login`, `/esqueci-senha`, `/redefinir-senha` + `proxy.ts` protegendo rotas
-- [ ] RLS: isolamento total de dados por `projeto_id` — **escrito na migration, aguardando aplicação no banco**
-- [ ] Seed inicial: Projeto "Cúria" e Projeto "Seminário" com domínios autorizados — **incluído na migration, aguardando aplicação**
+- [x] RLS: isolamento total de dados por `projeto_id` — 6 tabelas com policies ativas, verificado em produção
+- [x] Seed inicial: Projeto "Cúria" e Projeto "Seminário" — confirmado em produção com SLA da Cúria (120min/240min) e Seminário pendente
 
-**🔴 Bloqueio atual:** aplicar `supabase/migrations/0001_init.sql` requer acesso direto ao Postgres (senha do banco ou Supabase CLI logado) — as chaves de API (anon/service_role) não executam DDL. Aguardando Rafael.
+**⚠️ Pendência para a Fase 02:** os domínios de e-mail seedados (`arquidiocesebsb.org.br` para Cúria, `seminario.org.br` para Seminário) são placeholders — confirmar os domínios institucionais reais antes de ativar a ingestão por e-mail.
 
 ### 🔵 FASE 02: INGESTÃO DE CHAMADO POR E-MAIL
 **Status:** ⏳ Aguardando
@@ -79,4 +79,4 @@
 | Data | O que foi feito |
 |------|----------------|
 | 2026-07-08 | Shiva conduziu Descoberta completa e formalizou spec (projeto.md, moscow.md, design-system.json). Hades recebeu a spec e definiu stack + roadmap faseado. |
-| 2026-07-08 | Atlas executou Fase 01: repositório GitHub criado, scaffold Next.js, Supabase client, design tokens, autenticação, migration SQL escrita, Vercel linkado com env vars, GitFlow (dev/hml/main) publicado. Bloqueado na aplicação da migration por falta de acesso ao Postgres. |
+| 2026-07-08 | Atlas executou e concluiu a Fase 01: repositório GitHub, scaffold Next.js, Supabase (schema + RLS aplicados em produção), design tokens, autenticação, Vercel linkado com env vars, GitFlow (dev/hml/main) publicado. |
