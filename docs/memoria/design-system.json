@@ -1,0 +1,72 @@
+{
+  "projeto": "Hub Tech ITSM — Sistema de Registro de Chamados Técnicos",
+  "fonte": "HubTech_Brand_Guidelines_v2.pdf (Identidade Visual v2.0 — 2026) — mesma identidade oficial usada no pitch-deck",
+  "cores": {
+    "azul-hub": "#2952D9",
+    "azul-profundo": "#1A3AB8",
+    "cinza-logo": "#9DA3AE",
+    "preto-hub": "#0A0A0A",
+    "cinza-dark": "#1A1A1A",
+    "cinza-medio": "#888888",
+    "branco": "#FFFFFF"
+  },
+  "uso_das_cores": {
+    "azul-hub": "botões primários, ícones ativos, links, bordas de destaque, item de menu selecionado",
+    "preto-hub": "background padrão (dark-first)",
+    "cinza-dark": "cards, tabelas e superfícies (linhas de chamado, painéis)",
+    "cinza-medio": "labels, rodapés, metadados, texto secundário",
+    "branco": "texto principal sobre fundo escuro",
+    "restricao": "não usar azul claro, ciano ou outras variantes como acento de marca — apenas #2952D9"
+  },
+  "cores_semanticas_de_estado": {
+    "observacao": "Estas cores são independentes do acento de marca (azul) — servem só para comunicar estado/urgência de SLA e status de chamado, uso comum em qualquer sistema de ITSM.",
+    "sucesso": "#22C55E — chamado resolvido, dentro do SLA",
+    "atencao": "#F59E0B — SLA se aproximando do limite",
+    "critico": "#EF4444 — SLA estourado ou chamado urgente",
+    "neutro": "#9DA3AE — SLA a definir / sem prioridade definida"
+  },
+  "tipografia": {
+    "display": "Space Grotesk Bold 700 — títulos de seção, headings de destaque",
+    "display_fallback": "Nunito Sans Bold / Poppins Bold",
+    "corpo": "Inter Regular 400 — parágrafos, descrições, conteúdo de chamado",
+    "corpo_fallback": "Roboto Regular / DM Sans",
+    "labels": "Inter SemiBold 600 + letter-spacing 2.5px, sempre caixa alta — usar em labels de status/badge",
+    "escala": {
+      "h1": "28-32px Bold",
+      "h2": "20-24px Bold",
+      "h3": "16-18px SemiBold",
+      "body": "14-15px Regular, line-height 1.6",
+      "caption": "11-12px Regular/Medium"
+    },
+    "restricao": "máximo 2 famílias tipográficas; nunca fontes decorativas ou script"
+  },
+  "estilo_visual": {
+    "pilares": [
+      "Dark-first — fundo escuro é o padrão digital",
+      "Tech corporativo — clean, sem ornamentos, linhas retas, espaçamento generoso",
+      "Azul como acento — reservado para botões/bordas ativas, não pintar tudo de azul",
+      "Minimalista — sem gradientes excessivos nem sombras decorativas pesadas",
+      "Contexto completo em uma tela só — histórico do chamado, Projeto e SLA visíveis sem trocar de aba",
+      "Fricção mínima — poucos campos, poucos cliques para consultar um chamado"
+    ],
+    "referencias": ["linear.app", "vercel.com", "cloudflare.com", "atlassian.com", "servicenow.com"]
+  },
+  "componentes_especificos_app": {
+    "badge_status": "pill arredondado (radius-lg), cor de fundo semântica sutil (10-15% opacidade) + texto na cor sólida correspondente",
+    "sla_countdown": "indicador visual (barra ou ponto colorido) usando as cores semânticas de estado — nunca só número, sempre cor + texto",
+    "tabela_chamados": "fundo cinza-dark, zebra sutil opcional, linha inteira clicável para abrir o chamado",
+    "login": "tela minimalista, logo Hub Tech centralizado, campo usuário/senha, link 'esqueci minha senha' sempre visível"
+  },
+  "logo": {
+    "regra_fundo": "sempre sobre preto ou branco puro, nunca sombra/brilho/gradiente/rotação",
+    "zona_protecao": "espaço equivalente à altura da letra 'h' ao redor do logo",
+    "tamanho_minimo": "80px digital",
+    "versao_dark": "logo branca ou padrão sobre fundo escuro (usar no portal e no painel técnico)"
+  },
+  "tom_de_voz": [
+    "Direto e objetivo — comunicação sem rodeios, foco em resolver o chamado",
+    "Técnico mas acessível — termos de TI sem alienar quem não é da área",
+    "Confiante — especialista e parceiro estratégico, não vendedor ansioso",
+    "Orientado a resultado — sempre conecta a ação técnica ao impacto no atendimento"
+  ]
+}
