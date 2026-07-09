@@ -23,15 +23,19 @@
 **⚠️ Pendência para a Fase 02:** os domínios de e-mail seedados (`arquidiocesebsb.org.br` para Cúria, `seminario.org.br` para Seminário) são placeholders — confirmar os domínios institucionais reais antes de ativar a ingestão por e-mail.
 
 ### 🔵 FASE 02: INGESTÃO DE CHAMADO POR E-MAIL
-**Status:** ⏳ Aguardando
-**Progresso:** 0/5 tarefas (0%)
+**Status:** 🟡 Em andamento
+**Progresso:** 4/5 tarefas (80%)
 
 #### Tarefas:
-- [ ] Configurar domínio de recebimento (subdomínio dedicado, ex: `suporte.hubtech.tec.br`) no Resend
-- [ ] Webhook de recebimento de e-mail → validação de domínio contra Projeto
-- [ ] Criação de chamado a partir de e-mail novo
-- [ ] Encadeamento de resposta em chamado existente (por thread/assunto)
-- [ ] Resposta automática de rejeição para domínio não autorizado
+- [x] Webhook de recebimento de e-mail → validação de domínio contra Projeto (`src/app/api/webhooks/resend-inbound/route.ts`, `src/lib/chamados/ingest.ts`)
+- [x] Criação de chamado a partir de e-mail novo — código escrito, com cálculo automático de SLA por Projeto
+- [x] Encadeamento de resposta em chamado existente — via `In-Reply-To`/`References` contra `email_thread_id`
+- [x] Resposta automática de rejeição para domínio não autorizado
+- [ ] Configurar domínio de recebimento no Resend — **bloqueado**, aguardando definições de Rafael (ver pendências)
+
+**🔴 Bloqueios atuais:**
+1. Conta Resend: preciso de uma API Key para configurar o domínio de recebimento e enviar e-mails transacionais.
+2. `hubtech.tec.br` pode já ter MX records de outro provedor de e-mail (ex: Google Workspace) para outros endereços (`admin@`, etc.). Apontar o MX do domínio raiz para o Resend quebraria esse serviço existente — a prática recomendada é usar um subdomínio dedicado só para recebimento (ex: `suporte@chamados.hubtech.tec.br`), o que mudaria o endereço combinado anteriormente (`suporte@hubtech.tec.br`).
 
 ### 🔵 FASE 03: ATENDIMENTO E SLA
 **Status:** ⏳ Aguardando
