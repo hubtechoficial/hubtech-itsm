@@ -24,18 +24,20 @@
 
 ### 🔵 FASE 02: INGESTÃO DE CHAMADO POR E-MAIL
 **Status:** 🟡 Em andamento
-**Progresso:** 4/5 tarefas (80%)
+**Progresso:** 4.5/5 tarefas (90%)
 
 #### Tarefas:
 - [x] Webhook de recebimento de e-mail → validação de domínio contra Projeto (`src/app/api/webhooks/resend-inbound/route.ts`, `src/lib/chamados/ingest.ts`)
 - [x] Criação de chamado a partir de e-mail novo — código escrito, com cálculo automático de SLA por Projeto
 - [x] Encadeamento de resposta em chamado existente — via `In-Reply-To`/`References` contra `email_thread_id`
 - [x] Resposta automática de rejeição para domínio não autorizado
-- [ ] Configurar domínio de recebimento no Resend — **bloqueado**, aguardando definições de Rafael (ver pendências)
+- [~] Configurar domínio de recebimento no Resend — domínio `chamados.hubtech.tec.br` e webhook criados via API; **falta Rafael adicionar os registros DNS** (ver abaixo) e aguardar verificação
 
 **Decisão registrada:** `hubtech.tec.br` já usa Google Workspace para outras contas — confirmado por Rafael. Endereço de recebimento definido: **suporte@chamados.hubtech.tec.br** (subdomínio dedicado, não interfere no Google Workspace).
 
-**🔴 Bloqueio atual:** falta uma API Key do Resend para criar o domínio `chamados.hubtech.tec.br` na conta, obter os registros DNS exatos (MX/TXT) e ativar o recebimento.
+**Credenciais:** API Key e Webhook Signing Secret do Resend salvos no cofre e replicados em todos os ambientes do Vercel (Production, Development, Preview dev/hml) — 12/12 valores confirmados corretos após correção de um erro de automação (3 variáveis foram gravadas vazias na primeira tentativa; identificado e corrigido antes do deploy).
+
+**🟡 Pendência:** aguardando Rafael adicionar os registros DNS abaixo no provedor de `hubtech.tec.br` para o Resend verificar o domínio e ativar o recebimento.
 
 ### 🔵 FASE 03: ATENDIMENTO E SLA
 **Status:** ⏳ Aguardando
