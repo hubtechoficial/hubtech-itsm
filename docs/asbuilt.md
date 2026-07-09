@@ -67,13 +67,13 @@
 **Primeira conta Administrador:** `rafael@hubtech.tec.br` provisionada diretamente no banco (bootstrap — não dava pra usar a tela, que exige um Admin já logado). Senha temporária entregue a Rafael fora deste documento; recomendado trocar via "esqueci minha senha" no primeiro acesso.
 
 ### 🔵 FASE 05: BASE DE CONHECIMENTO
-**Status:** ⏳ Aguardando
-**Progresso:** 0/3 tarefas (0%)
+**Status:** ✅ Concluída
+**Progresso:** 3/3 tarefas (100%)
 
 #### Tarefas:
-- [ ] Cadastro de artigos de solução (uso interno do time técnico)
-- [ ] Busca de artigos
-- [ ] Vínculo de artigo consultado ao chamado (rastreabilidade)
+- [x] Cadastro de artigos de solução (uso interno do time técnico) — `/admin/artigos`, restrito a perfil Administrador (RLS)
+- [x] Busca de artigos — busca por título/conteúdo na mesma tela
+- [x] Vínculo de artigo consultado ao chamado (rastreabilidade) — nova tabela `chamado_artigos_consultados` (migration `0003_kb_links.sql`, aplicada em produção), vínculo feito direto na tela de detalhe do chamado
 
 ### 🔵 FASE 06: PRODUÇÃO (FINAL)
 **Status:** ⏳ Aguardando
