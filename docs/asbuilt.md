@@ -42,15 +42,15 @@
 **🟡 Pendência:** registro MX de recebimento (`chamados`) já **verificado** ✅ — o domínio já pode receber e-mail. Registros de envio (DKIM, SPF) ainda em `pending`, aguardando propagação completa antes de confiar 100% nas notificações/respostas automáticas de saída.
 
 ### 🔵 FASE 03: ATENDIMENTO E SLA
-**Status:** ⏳ Aguardando
-**Progresso:** 0/5 tarefas (0%)
+**Status:** 🟡 Em andamento
+**Progresso:** 4/5 tarefas (80%)
 
 #### Tarefas:
-- [ ] Categorização e priorização de chamado
-- [ ] Roteamento automático para o time técnico
-- [ ] Contador de SLA por Projeto (estados: dentro do prazo / atenção / crítico / a definir)
-- [ ] Notificação por e-mail a cada atualização do chamado
-- [ ] Alerta visual antes do estouro do SLA
+- [x] Categorização e priorização de chamado — heurística por palavra-chave (`src/lib/chamados/priority.ts`); manual pela equipe fica pra tela de gestão (Fase 04)
+- [~] Roteamento automático para o time técnico — implementado como e-mail de notificação interna (`src/lib/chamados/notify.ts`); **aguardando Rafael informar o endereço** (`INTERNAL_NOTIFICATION_EMAIL`)
+- [x] Contador de SLA por Projeto — `src/lib/chamados/sla.ts` (`sem_sla` / `dentro_prazo` / `atencao` / `estourado` / `resolvido`), testado com casos de data
+- [x] Notificação por e-mail a cada atualização — confirmação enviada ao solicitante na criação do chamado
+- [x] Alerta visual antes do estouro do SLA — badge colorido (verde/amarelo/vermelho/neutro) na tela `/chamados`
 
 ### 🔵 FASE 04: PORTAL E PERFIS DE ACESSO
 **Status:** ⏳ Aguardando
