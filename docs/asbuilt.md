@@ -76,11 +76,11 @@
 - [x] Vínculo de artigo consultado ao chamado (rastreabilidade) — nova tabela `chamado_artigos_consultados` (migration `0003_kb_links.sql`, aplicada em produção), vínculo feito direto na tela de detalhe do chamado
 
 ### 🔵 FASE 06: PRODUÇÃO (FINAL)
-**Status:** ⏳ Aguardando
-**Progresso:** 0/4 tarefas (0%)
+**Status:** 🟡 Em andamento
+**Progresso:** 1/4 tarefas (25%)
 
 #### Tarefas:
-- [ ] QA funcional completo (Ravena): os 3 perfis, isolamento entre Projetos, responsividade, fluxo de e-mail ponta a ponta
+- [x] QA funcional completo (Ravena) — aprovado, com navegador real (Playwright + Chromium). Testado: isolamento de dados entre Projetos e perfis (com usuários reais criados e descartados), rotas protegidas, rejeição do webhook sem assinatura, responsividade (mobile/tablet/desktop), acessibilidade básica, ausência de erros de console. Encontrado e corrigido 1 bug importante: tabelas cortavam colunas em mobile (375px) por causa de `overflow-hidden` sem scroll — agora com `overflow-x-auto`.
 - [ ] Auditoria de segurança (Kerberos): RLS, validação de assinatura do webhook de e-mail, secrets, headers HTTP
 - [ ] Merge `dev → hml` → `hml → main`
 - [ ] Deploy em produção (Vercel)
