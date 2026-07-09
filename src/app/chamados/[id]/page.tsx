@@ -41,8 +41,9 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
   const podeComentar = usuarioAtual?.perfil === "admin" || usuarioAtual?.perfil === "supervisor";
   const ehAdmin = usuarioAtual?.perfil === "admin";
 
+  type ArtigoRef = { titulo: string } | { titulo: string }[] | null;
   let artigosDisponiveis: { id: string; titulo: string }[] = [];
-  let artigosVinculados: { id: string; artigos: { titulo: string } | null }[] = [];
+  let artigosVinculados: { id: string; artigos: ArtigoRef }[] = [];
 
   if (ehAdmin) {
     const [{ data: artigos }, { data: vinculados }] = await Promise.all([
@@ -53,7 +54,12 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
         .eq("chamado_id", id),
     ]);
     artigosDisponiveis = artigos ?? [];
-    artigosVinculados = (vinculados as never) ?? [];
+    artigosVinculados = (vinculados ?? []) as unknown as typeof artigosVinculados;
+  }
+
+  function tituloDoArtigo(artigos: ArtigoRef): string {
+    if (!artigos) return "";
+    return Array.isArray(artigos) ? (artigos[0]?.titulo ?? "") : artigos.titulo;
   }
 
   return (
@@ -120,7 +126,7 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
               <ul className="mb-4 flex flex-col gap-1 text-sm">
                 {artigosVinculados.map((vinculo) => (
                   <li key={vinculo.id} className="text-gray-medium">
-                    • {vinculo.artigos?.titulo}
+                    • {tituloDoArtigo(vinculo.artigos)}
                   </li>
                 ))}
               </ul>
