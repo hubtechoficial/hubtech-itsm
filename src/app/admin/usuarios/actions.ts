@@ -2,8 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getUsuarioAtual } from "@/lib/usuarios/current";
 
 export async function criarUsuario(formData: FormData) {
+  const usuarioAtual = await getUsuarioAtual();
+  if (usuarioAtual?.perfil !== "admin") {
+    throw new Error("Apenas Administradores podem criar usuários.");
+  }
+
   const nome = String(formData.get("nome") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const senha = String(formData.get("senha") ?? "");

@@ -9,16 +9,21 @@ export default async function AdminArtigosPage({
   const { q } = await searchParams;
   const supabase = await createClient();
 
-  let query = supabase
+  const { data: todosArtigos } = await supabase
     .from("artigos_conhecimento")
     .select("id, titulo, conteudo, tags, created_at")
     .order("titulo");
 
-  if (q) {
-    query = query.or(`titulo.ilike.%${q}%,conteudo.ilike.%${q}%`);
-  }
-
-  const { data: artigos } = await query;
+  // Filtro em memória (não em SQL): volume da Base de Conhecimento é pequeno
+  // e isso evita interpolar entrada do usuário na sintaxe de filtro do PostgREST.
+  const termo = q?.trim().toLowerCase();
+  const artigos = termo
+    ? todosArtigos?.filter(
+        (artigo) =>
+          artigo.titulo.toLowerCase().includes(termo) ||
+          artigo.conteudo.toLowerCase().includes(termo),
+      )
+    : todosArtigos;
 
   return (
     <div>
