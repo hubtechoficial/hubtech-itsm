@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getUsuarioAtual } from "@/lib/usuarios/current";
 import { getSlaStatus, SLA_STATUS_LABEL, SLA_STATUS_COLOR_CLASS } from "@/lib/chamados/sla";
 
 const PRIORIDADE_COLOR_CLASS: Record<string, string> = {
@@ -7,6 +9,12 @@ const PRIORIDADE_COLOR_CLASS: Record<string, string> = {
   media: "bg-primary/15 text-primary",
   alta: "bg-warning/15 text-warning",
   critica: "bg-critical/15 text-critical",
+};
+
+const TITULO_POR_PERFIL: Record<string, string> = {
+  basico: "Meus chamados",
+  supervisor: "Chamados do meu setor",
+  admin: "Todos os chamados",
 };
 
 export default async function ChamadosPage() {
@@ -19,15 +27,27 @@ export default async function ChamadosPage() {
     redirect("/login");
   }
 
-  const { data: chamados } = await supabase
-    .from("chamados")
-    .select("id, assunto, status, prioridade, sla_prazo_resolucao, resolvido_em, created_at")
-    .order("created_at", { ascending: false });
+  const [{ data: chamados }, usuarioAtual] = await Promise.all([
+    supabase
+      .from("chamados")
+      .select("id, assunto, status, prioridade, sla_prazo_resolucao, resolvido_em, created_at")
+      .order("created_at", { ascending: false }),
+    getUsuarioAtual(),
+  ]);
+
+  const titulo = TITULO_POR_PERFIL[usuarioAtual?.perfil ?? "basico"];
 
   return (
     <main className="flex-1 px-6 py-10">
       <div className="mx-auto max-w-3xl">
-        <h1 className="mb-6 text-2xl font-bold">Meus chamados</h1>
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-2xl font-bold">{titulo}</h1>
+          {usuarioAtual?.perfil === "admin" && (
+            <Link href="/admin" className="text-sm text-primary hover:underline">
+              Administração
+            </Link>
+          )}
+        </div>
 
         {!chamados || chamados.length === 0 ? (
           <p className="text-sm text-gray-medium">Nenhum chamado encontrado.</p>
@@ -47,8 +67,15 @@ export default async function ChamadosPage() {
                 {chamados.map((chamado) => {
                   const slaStatus = getSlaStatus(chamado);
                   return (
-                    <tr key={chamado.id} className="border-t border-white/10 bg-surface/40">
-                      <td className="px-4 py-3">{chamado.assunto}</td>
+                    <tr
+                      key={chamado.id}
+                      className="cursor-pointer border-t border-white/10 bg-surface/40 hover:bg-surface"
+                    >
+                      <td className="px-4 py-3">
+                        <Link href={`/chamados/${chamado.id}`} className="block">
+                          {chamado.assunto}
+                        </Link>
+                      </td>
                       <td className="px-4 py-3 capitalize">{chamado.status}</td>
                       <td className="px-4 py-3">
                         <span

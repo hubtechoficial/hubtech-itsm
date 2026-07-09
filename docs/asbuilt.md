@@ -53,11 +53,11 @@
 - [x] Alerta visual antes do estouro do SLA — badge colorido (verde/amarelo/vermelho/neutro) na tela `/chamados`
 
 ### 🔵 FASE 04: PORTAL E PERFIS DE ACESSO
-**Status:** ⏳ Aguardando
-**Progresso:** 0/6 tarefas (0%)
+**Status:** 🟡 Em andamento
+**Progresso:** 1/6 tarefas (17%)
 
 #### Tarefas:
-- [ ] Tela de login (usuário/senha) + "esqueci minha senha"
+- [x] Tela de login (usuário/senha) + "esqueci minha senha" — já implementada na Fase 01
 - [ ] Perfil Básico: lista + detalhe dos próprios chamados
 - [ ] Perfil Supervisor: lista + detalhe dos chamados do Grupo/Setor + interação (comentar)
 - [ ] Perfil Administrador: cadastro de Projetos
