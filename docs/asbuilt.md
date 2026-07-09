@@ -54,15 +54,17 @@
 
 ### 🔵 FASE 04: PORTAL E PERFIS DE ACESSO
 **Status:** 🟡 Em andamento
-**Progresso:** 1/6 tarefas (17%)
+**Progresso:** 6/6 tarefas de código (100%) — falta provisionar a 1ª conta Administrador
 
 #### Tarefas:
 - [x] Tela de login (usuário/senha) + "esqueci minha senha" — já implementada na Fase 01
-- [ ] Perfil Básico: lista + detalhe dos próprios chamados
-- [ ] Perfil Supervisor: lista + detalhe dos chamados do Grupo/Setor + interação (comentar)
-- [ ] Perfil Administrador: cadastro de Projetos
-- [ ] Perfil Administrador: cadastro de Grupos e Usuários (com provisionamento de conta)
-- [ ] Perfil Administrador: configuração de SLA e domínios por Projeto
+- [x] Perfil Básico: lista + detalhe dos próprios chamados (`/chamados`, `/chamados/[id]`)
+- [x] Perfil Supervisor: lista + detalhe dos chamados do Grupo/Setor + interação (comentar) — RLS já restringe automaticamente por perfil
+- [x] Perfil Administrador: cadastro de Projetos (`/admin/projetos`, com edição de domínios/SLA)
+- [x] Perfil Administrador: cadastro de Grupos e Usuários (`/admin/grupos`, `/admin/usuarios` — provisionamento via `auth.admin.createUser`)
+- [x] Perfil Administrador: configuração de SLA e domínios por Projeto — editável na própria tela de Projetos
+
+**Pendência:** falta criar a primeira conta Administrador (bootstrap) — aguardando e-mail de preferência de Rafael.
 
 ### 🔵 FASE 05: BASE DE CONHECIMENTO
 **Status:** ⏳ Aguardando
