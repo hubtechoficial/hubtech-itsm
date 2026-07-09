@@ -4,6 +4,11 @@ import { NextResponse, type NextRequest } from "next/server";
 const PUBLIC_PATHS = ["/login", "/esqueci-senha", "/redefinir-senha"];
 
 export async function proxy(request: NextRequest) {
+  // Webhooks se autenticam por assinatura própria (ex: svix), não por sessão de portal.
+  if (request.nextUrl.pathname.startsWith("/api/webhooks/")) {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
