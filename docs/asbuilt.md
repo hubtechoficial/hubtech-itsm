@@ -77,11 +77,16 @@
 
 ### 🔵 FASE 06: PRODUÇÃO (FINAL)
 **Status:** 🟡 Em andamento
-**Progresso:** 1/4 tarefas (25%)
+**Progresso:** 2/4 tarefas (50%)
 
 #### Tarefas:
 - [x] QA funcional completo (Ravena) — aprovado, com navegador real (Playwright + Chromium). Testado: isolamento de dados entre Projetos e perfis (com usuários reais criados e descartados), rotas protegidas, rejeição do webhook sem assinatura, responsividade (mobile/tablet/desktop), acessibilidade básica, ausência de erros de console. Encontrado e corrigido 1 bug importante: tabelas cortavam colunas em mobile (375px) por causa de `overflow-hidden` sem scroll — agora com `overflow-x-auto`.
-- [ ] Auditoria de segurança (Kerberos): RLS, validação de assinatura do webhook de e-mail, secrets, headers HTTP
+- [x] Auditoria de segurança (Kerberos) — aprovado após correções. Achados e corrigidos:
+  - 🔴 **Crítico**: `criarUsuario` não checava se quem chamava a Server Action era Administrador — permitia escalação de privilégio via chamada direta à action (bypass da tela). Corrigido com checagem de `perfil === 'admin'` via `getUsuarioAtual()` antes de qualquer operação com `service_role`.
+  - 🟡 Busca da Base de Conhecimento interpolava entrada do usuário direto no filtro `.or()` do PostgREST (injeção de sintaxe de filtro, contida pelo RLS mas padrão perigoso) — trocada por filtro em memória.
+  - 🟡 Faltavam headers de segurança HTTP e `X-Powered-By` vazava a stack — adicionados `X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, `Content-Security-Policy` no `next.config.ts`.
+  - ✅ Sem secrets vazados (histórico git completo), 0 achados no Semgrep (117 regras OWASP/Next.js/React), RLS 100% habilitado, funções `SECURITY DEFINER` com `search_path` fixo, CVE-2025-29927 testado e não reproduz, CSRF coberto pela proteção nativa de Server Actions.
+  - 🟢 Observação: vulnerabilidade moderada de XSS no `postcss` (dependência interna do Next.js, não nossa) — risco real baixo (só afeta build time), monitorar atualização do Next.js.
 - [ ] Merge `dev → hml` → `hml → main`
 - [ ] Deploy em produção (Vercel)
 
