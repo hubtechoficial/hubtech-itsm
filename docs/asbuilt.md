@@ -2,7 +2,8 @@
 
 **Descrição:** Sistema de ITSM multi-tenant para os contratos de terceirização de suporte da Hub Tech. Chamados entram por e-mail institucional, ficam isolados por Projeto (contrato), com SLA configurável e portal de consulta com 3 perfis de acesso.
 **Stack:** Next.js + Supabase (Postgres + Auth + RLS) + Vercel + Resend (e-mail transacional e recebimento) + GitHub (`hubtechoficial/hubtech-itsm`)
-**Última atualização:** 2026-07-08
+**Última atualização:** 2026-07-09
+**Status geral:** 🎉 V1 em produção — todas as 6 fases do roadmap concluídas
 
 ## Roadmap de Implementação
 
@@ -76,8 +77,8 @@
 - [x] Vínculo de artigo consultado ao chamado (rastreabilidade) — nova tabela `chamado_artigos_consultados` (migration `0003_kb_links.sql`, aplicada em produção), vínculo feito direto na tela de detalhe do chamado
 
 ### 🔵 FASE 06: PRODUÇÃO (FINAL)
-**Status:** 🟡 Em andamento
-**Progresso:** 2/4 tarefas (50%)
+**Status:** ✅ Concluída
+**Progresso:** 4/4 tarefas (100%)
 
 #### Tarefas:
 - [x] QA funcional completo (Ravena) — aprovado, com navegador real (Playwright + Chromium). Testado: isolamento de dados entre Projetos e perfis (com usuários reais criados e descartados), rotas protegidas, rejeição do webhook sem assinatura, responsividade (mobile/tablet/desktop), acessibilidade básica, ausência de erros de console. Encontrado e corrigido 1 bug importante: tabelas cortavam colunas em mobile (375px) por causa de `overflow-hidden` sem scroll — agora com `overflow-x-auto`.
@@ -87,11 +88,16 @@
   - 🟡 Faltavam headers de segurança HTTP e `X-Powered-By` vazava a stack — adicionados `X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`, `Content-Security-Policy` no `next.config.ts`.
   - ✅ Sem secrets vazados (histórico git completo), 0 achados no Semgrep (117 regras OWASP/Next.js/React), RLS 100% habilitado, funções `SECURITY DEFINER` com `search_path` fixo, CVE-2025-29927 testado e não reproduz, CSRF coberto pela proteção nativa de Server Actions.
   - 🟢 Observação: vulnerabilidade moderada de XSS no `postcss` (dependência interna do Next.js, não nossa) — risco real baixo (só afeta build time), monitorar atualização do Next.js.
-- [ ] Merge `dev → hml` → `hml → main`
-- [ ] Deploy em produção (Vercel)
+- [x] Merge `dev → hml` → `hml → main` — backups criados antes de cada etapa (`backup-pre-hml-20260709-165758`, `backup-pre-main-20260709-165918`), confirmação explícita de Rafael obtida antes do merge final
+- [x] Deploy em produção (Vercel) — build automático disparado pelo push em `main`, concluído com sucesso
+
+**Incidente resolvido durante o deploy:** a URL de produção estava atrás da proteção "Vercel Authentication" (Deployment Protection), redirecionando qualquer visitante — inclusive Rafael — pro login da própria Vercel em vez do `/login` da aplicação. Rafael desabilitou em `Project Settings → Deployment Protection`. Confirmado depois: `/login` responde 200 com conteúdo correto, headers de segurança presentes, webhook rejeita requisição sem assinatura (400), e login end-to-end testado com a conta Admin real direto na URL de produção — sem erros de console.
+
+**🎉 Sistema em produção:** https://hubtech-itsm-hub-tech-oficial.vercel.app
 
 ## Histórico de Sessões
 | Data | O que foi feito |
 |------|----------------|
 | 2026-07-08 | Shiva conduziu Descoberta completa e formalizou spec (projeto.md, moscow.md, design-system.json). Hades recebeu a spec e definiu stack + roadmap faseado. |
 | 2026-07-08 | Atlas executou e concluiu a Fase 01: repositório GitHub, scaffold Next.js, Supabase (schema + RLS aplicados em produção), design tokens, autenticação, Vercel linkado com env vars, GitFlow (dev/hml/main) publicado. |
+| 2026-07-09 | Fases 02 a 05 concluídas (ingestão por e-mail, SLA/notificações, portal com 3 perfis, Base de Conhecimento). Ravena aprovou QA com navegador real (1 bug de mobile corrigido). Kerberos aprovou segurança após corrigir 1 falha crítica de escalação de privilégio e 2 importantes. Merge `dev → hml → main` com aprovação explícita de Rafael. Deploy em produção concluído após resolver bloqueio de Deployment Protection do Vercel. **V1 do Hub Tech ITSM está no ar.** |
