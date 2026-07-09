@@ -37,7 +37,7 @@
 
 **Credenciais:** API Key e Webhook Signing Secret do Resend salvos no cofre e replicados em todos os ambientes do Vercel (Production, Development, Preview dev/hml) — 12/12 valores confirmados corretos após correção de um erro de automação (3 variáveis foram gravadas vazias na primeira tentativa; identificado e corrigido antes do deploy).
 
-**🟡 Pendência:** aguardando Rafael adicionar os registros DNS abaixo no provedor de `hubtech.tec.br` para o Resend verificar o domínio e ativar o recebimento.
+**🟡 Pendência:** registro MX de recebimento (`chamados`) já **verificado** ✅ — o domínio já pode receber e-mail. Registros de envio (DKIM, SPF) ainda em `pending`, aguardando propagação completa antes de confiar 100% nas notificações/respostas automáticas de saída.
 
 ### 🔵 FASE 03: ATENDIMENTO E SLA
 **Status:** ⏳ Aguardando
