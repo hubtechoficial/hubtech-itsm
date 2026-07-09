@@ -33,9 +33,9 @@
 - [x] Resposta automática de rejeição para domínio não autorizado
 - [ ] Configurar domínio de recebimento no Resend — **bloqueado**, aguardando definições de Rafael (ver pendências)
 
-**🔴 Bloqueios atuais:**
-1. Conta Resend: preciso de uma API Key para configurar o domínio de recebimento e enviar e-mails transacionais.
-2. `hubtech.tec.br` pode já ter MX records de outro provedor de e-mail (ex: Google Workspace) para outros endereços (`admin@`, etc.). Apontar o MX do domínio raiz para o Resend quebraria esse serviço existente — a prática recomendada é usar um subdomínio dedicado só para recebimento (ex: `suporte@chamados.hubtech.tec.br`), o que mudaria o endereço combinado anteriormente (`suporte@hubtech.tec.br`).
+**Decisão registrada:** `hubtech.tec.br` já usa Google Workspace para outras contas — confirmado por Rafael. Endereço de recebimento definido: **suporte@chamados.hubtech.tec.br** (subdomínio dedicado, não interfere no Google Workspace).
+
+**🔴 Bloqueio atual:** falta uma API Key do Resend para criar o domínio `chamados.hubtech.tec.br` na conta, obter os registros DNS exatos (MX/TXT) e ativar o recebimento.
 
 ### 🔵 FASE 03: ATENDIMENTO E SLA
 **Status:** ⏳ Aguardando

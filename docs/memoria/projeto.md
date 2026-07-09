@@ -43,6 +43,8 @@ Projeto (= contrato, ex: "Cúria", "Seminário")
 Isolamento entre Projetos é uma regra estrutural: um usuário nunca enxerga dados de um Projeto diferente do seu, independentemente do perfil (exceto Administrador).
 
 ## Fluxo de Entrada de Chamados
+Endereço de recebimento: **suporte@chamados.hubtech.tec.br** — subdomínio dedicado (não `hubtech.tec.br`, que já usa Google Workspace para outras contas; apontar o MX do domínio raiz para o Resend quebraria esse e-mail existente).
+
 1. Cliente envia e-mail do domínio institucional autorizado do seu Projeto.
 2. Sistema valida o domínio contra o Projeto correspondente; e-mail de domínio não autorizado (ex: Gmail pessoal) recebe resposta automática explicando que deve usar o e-mail institucional.
 3. Novo chamado é criado (ou, se for resposta a um chamado existente, a mensagem é encadeada no mesmo chamado — sem duplicar).
@@ -63,7 +65,7 @@ Baixo: cerca de 3 chamados por dia útil somando os contratos ativos (~60-65/mê
 Reaproveita o Brand Guideline oficial da Hub Tech (`HubTech_Brand_Guidelines_v2.pdf`), já aplicado no projeto do pitch-deck. Ver [design-system.json](design-system.json) e [design-tokens.css](design-tokens.css) — adaptados aqui para o contexto de aplicação (portal/painel), não apenas página institucional.
 
 ## Stack Técnica
-A definir pelo Hades.
+Next.js + Supabase (Postgres + Auth + RLS) + Resend (e-mail transacional e recebimento) + Vercel. Definida pelo Hades na fase de roadmap.
 
 ## Repositório
-A definir — sugestão de seguir o padrão da empresa (conta `hubtechoficial` no GitHub), a confirmar na fase de roadmap com o Hades.
+`hubtechoficial/hubtech-itsm` no GitHub (privado). GitFlow: `dev` (desenvolvimento) → `hml` (homologação) → `main` (produção).

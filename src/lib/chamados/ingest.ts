@@ -52,7 +52,7 @@ export function buildInboundEmail(receivedEmail: {
   };
 }
 
-const SUPPORT_EMAIL = process.env.SUPPORT_INBOUND_EMAIL || "suporte@hubtech.tec.br";
+const SUPPORT_EMAIL = process.env.SUPPORT_INBOUND_EMAIL || "suporte@chamados.hubtech.tec.br";
 
 export async function processInboundEmail(email: InboundEmail) {
   const supabase = createAdminClient();
