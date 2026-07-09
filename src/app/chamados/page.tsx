@@ -53,52 +53,54 @@ export default async function ChamadosPage() {
           <p className="text-sm text-gray-medium">Nenhum chamado encontrado.</p>
         ) : (
           <div className="overflow-hidden rounded-lg border border-white/10">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-surface text-xs uppercase tracking-[2.5px] text-gray-medium">
-                <tr>
-                  <th className="px-4 py-3">Assunto</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Prioridade</th>
-                  <th className="px-4 py-3">SLA</th>
-                  <th className="px-4 py-3">Aberto em</th>
-                </tr>
-              </thead>
-              <tbody>
-                {chamados.map((chamado) => {
-                  const slaStatus = getSlaStatus(chamado);
-                  return (
-                    <tr
-                      key={chamado.id}
-                      className="cursor-pointer border-t border-white/10 bg-surface/40 hover:bg-surface"
-                    >
-                      <td className="px-4 py-3">
-                        <Link href={`/chamados/${chamado.id}`} className="block">
-                          {chamado.assunto}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3 capitalize">{chamado.status}</td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`rounded-lg px-2 py-1 text-xs font-semibold uppercase tracking-wide ${PRIORIDADE_COLOR_CLASS[chamado.prioridade] ?? ""}`}
-                        >
-                          {chamado.prioridade}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`rounded-lg px-2 py-1 text-xs font-semibold uppercase tracking-wide ${SLA_STATUS_COLOR_CLASS[slaStatus]}`}
-                        >
-                          {SLA_STATUS_LABEL[slaStatus]}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-medium">
-                        {new Date(chamado.created_at).toLocaleDateString("pt-BR")}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-surface text-xs uppercase tracking-[2.5px] text-gray-medium">
+                  <tr>
+                    <th className="px-4 py-3">Assunto</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Prioridade</th>
+                    <th className="px-4 py-3">SLA</th>
+                    <th className="px-4 py-3">Aberto em</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chamados.map((chamado) => {
+                    const slaStatus = getSlaStatus(chamado);
+                    return (
+                      <tr
+                        key={chamado.id}
+                        className="cursor-pointer border-t border-white/10 bg-surface/40 hover:bg-surface"
+                      >
+                        <td className="px-4 py-3">
+                          <Link href={`/chamados/${chamado.id}`} className="block">
+                            {chamado.assunto}
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3 capitalize">{chamado.status}</td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`rounded-lg px-2 py-1 text-xs font-semibold uppercase tracking-wide ${PRIORIDADE_COLOR_CLASS[chamado.prioridade] ?? ""}`}
+                          >
+                            {chamado.prioridade}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`rounded-lg px-2 py-1 text-xs font-semibold uppercase tracking-wide ${SLA_STATUS_COLOR_CLASS[slaStatus]}`}
+                          >
+                            {SLA_STATUS_LABEL[slaStatus]}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-gray-medium">
+                          {new Date(chamado.created_at).toLocaleDateString("pt-BR")}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

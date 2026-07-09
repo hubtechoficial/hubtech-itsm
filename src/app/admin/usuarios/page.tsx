@@ -17,32 +17,34 @@ export default async function AdminUsuariosPage() {
       <h1 className="mb-6 text-2xl font-bold">Usuários</h1>
 
       <div className="mb-8 overflow-hidden rounded-lg border border-white/10">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-surface text-xs uppercase tracking-[2.5px] text-gray-medium">
-            <tr>
-              <th className="px-4 py-3">Nome</th>
-              <th className="px-4 py-3">E-mail</th>
-              <th className="px-4 py-3">Perfil</th>
-              <th className="px-4 py-3">Projeto</th>
-              <th className="px-4 py-3">Grupo</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuarios?.map((usuario) => (
-              <tr key={usuario.id} className="border-t border-white/10 bg-surface/40">
-                <td className="px-4 py-3">{usuario.nome}</td>
-                <td className="px-4 py-3 text-gray-medium">{usuario.email}</td>
-                <td className="px-4 py-3 capitalize">{usuario.perfil}</td>
-                <td className="px-4 py-3 text-gray-medium">
-                  {(usuario.projetos as unknown as { nome: string } | null)?.nome ?? "—"}
-                </td>
-                <td className="px-4 py-3 text-gray-medium">
-                  {(usuario.grupos as unknown as { nome: string } | null)?.nome ?? "—"}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-surface text-xs uppercase tracking-[2.5px] text-gray-medium">
+              <tr>
+                <th className="px-4 py-3">Nome</th>
+                <th className="px-4 py-3">E-mail</th>
+                <th className="px-4 py-3">Perfil</th>
+                <th className="px-4 py-3">Projeto</th>
+                <th className="px-4 py-3">Grupo</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {usuarios?.map((usuario) => (
+                <tr key={usuario.id} className="border-t border-white/10 bg-surface/40">
+                  <td className="px-4 py-3">{usuario.nome}</td>
+                  <td className="px-4 py-3 text-gray-medium">{usuario.email}</td>
+                  <td className="px-4 py-3 capitalize">{usuario.perfil}</td>
+                  <td className="px-4 py-3 text-gray-medium">
+                    {(usuario.projetos as unknown as { nome: string } | null)?.nome ?? "—"}
+                  </td>
+                  <td className="px-4 py-3 text-gray-medium">
+                    {(usuario.grupos as unknown as { nome: string } | null)?.nome ?? "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <h2 className="mb-4 text-lg font-semibold">Novo Usuário</h2>

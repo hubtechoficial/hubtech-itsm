@@ -13,24 +13,26 @@ export default async function AdminGruposPage() {
       <h1 className="mb-6 text-2xl font-bold">Grupos</h1>
 
       <div className="mb-8 overflow-hidden rounded-lg border border-white/10">
-        <table className="w-full text-left text-sm">
-          <thead className="bg-surface text-xs uppercase tracking-[2.5px] text-gray-medium">
-            <tr>
-              <th className="px-4 py-3">Nome</th>
-              <th className="px-4 py-3">Projeto</th>
-            </tr>
-          </thead>
-          <tbody>
-            {grupos?.map((grupo) => (
-              <tr key={grupo.id} className="border-t border-white/10 bg-surface/40">
-                <td className="px-4 py-3">{grupo.nome}</td>
-                <td className="px-4 py-3 text-gray-medium">
-                  {(grupo.projetos as unknown as { nome: string } | null)?.nome}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-surface text-xs uppercase tracking-[2.5px] text-gray-medium">
+              <tr>
+                <th className="px-4 py-3">Nome</th>
+                <th className="px-4 py-3">Projeto</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {grupos?.map((grupo) => (
+                <tr key={grupo.id} className="border-t border-white/10 bg-surface/40">
+                  <td className="px-4 py-3">{grupo.nome}</td>
+                  <td className="px-4 py-3 text-gray-medium">
+                    {(grupo.projetos as unknown as { nome: string } | null)?.nome}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <h2 className="mb-4 text-lg font-semibold">Novo Grupo</h2>
