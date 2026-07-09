@@ -23,19 +23,21 @@
 **⚠️ Pendência para a Fase 02:** os domínios de e-mail seedados (`arquidiocesebsb.org.br` para Cúria, `seminario.org.br` para Seminário) são placeholders — confirmar os domínios institucionais reais antes de ativar a ingestão por e-mail.
 
 ### 🔵 FASE 02: INGESTÃO DE CHAMADO POR E-MAIL
-**Status:** 🟡 Em andamento
-**Progresso:** 4.5/5 tarefas (90%)
+**Status:** ✅ Concluída (validação automática completa fica para a Fase 06)
+**Progresso:** 5/5 tarefas (100%)
 
 #### Tarefas:
 - [x] Webhook de recebimento de e-mail → validação de domínio contra Projeto (`src/app/api/webhooks/resend-inbound/route.ts`, `src/lib/chamados/ingest.ts`)
 - [x] Criação de chamado a partir de e-mail novo — código escrito, com cálculo automático de SLA por Projeto
 - [x] Encadeamento de resposta em chamado existente — via `In-Reply-To`/`References` contra `email_thread_id`
 - [x] Resposta automática de rejeição para domínio não autorizado
-- [~] Configurar domínio de recebimento no Resend — domínio `chamados.hubtech.tec.br` e webhook criados via API; **falta Rafael adicionar os registros DNS** (ver abaixo) e aguardar verificação
+- [x] Configurar domínio de recebimento no Resend — `chamados.hubtech.tec.br` verificado, MX de recebimento ativo
 
 **Decisão registrada:** `hubtech.tec.br` já usa Google Workspace para outras contas — confirmado por Rafael. Endereço de recebimento definido: **suporte@chamados.hubtech.tec.br** (subdomínio dedicado, não interfere no Google Workspace).
 
 **Credenciais:** API Key e Webhook Signing Secret do Resend salvos no cofre e replicados em todos os ambientes do Vercel (Production, Development, Preview dev/hml) — 12/12 valores confirmados corretos após correção de um erro de automação (3 variáveis foram gravadas vazias na primeira tentativa; identificado e corrigido antes do deploy).
+
+**Validação:** Rafael enviou um e-mail de teste real (`TI@arquidiocesedebrasilia.org.br` → `suporte@chamados.hubtech.tec.br`). O Resend recebeu corretamente, mas o webhook aponta para a URL de **produção** (`main`), que ainda não tem o código da Fase 02 — só chega lá após revisão de Ravena/Kerberos e aprovação de Rafael (GitFlow). Para confirmar que a lógica está correta sem furar esse processo, repliquei manualmente o e-mail recebido pelo mesmo código de ingestão: domínio reconhecido → Projeto "Cúria" → chamado e mensagem criados corretamente no banco. **Decisão de Rafael:** aceitar essa validação manual como suficiente por ora; o teste automático ponta a ponta (webhook real disparando em produção) fica para a Fase 06, após QA e segurança aprovarem o merge para `main`.
 
 **🟡 Pendência:** registro MX de recebimento (`chamados`) já **verificado** ✅ — o domínio já pode receber e-mail. Registros de envio (DKIM, SPF) ainda em `pending`, aguardando propagação completa antes de confiar 100% nas notificações/respostas automáticas de saída.
 
