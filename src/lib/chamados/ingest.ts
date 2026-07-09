@@ -1,5 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createResendClient } from "@/lib/resend/client";
+import { inferPrioridade } from "@/lib/chamados/priority";
+import { notificarChamadoCriado } from "@/lib/chamados/notify";
 
 interface InboundEmail {
   from: string;
@@ -106,6 +108,8 @@ export async function processInboundEmail(email: InboundEmail) {
     ? new Date(now.getTime() + projeto.sla_resolucao_minutos * 60_000).toISOString()
     : null;
 
+  const prioridade = inferPrioridade(email.subject, email.text ?? email.html);
+
   const { data: novoChamado, error } = await supabase
     .from("chamados")
     .insert({
@@ -113,6 +117,7 @@ export async function processInboundEmail(email: InboundEmail) {
       email_remetente: senderAddress,
       assunto: email.subject || "(sem assunto)",
       email_thread_id: email.messageId,
+      prioridade,
       sla_prazo_resposta: slaResposta,
       sla_prazo_resolucao: slaResolucao,
     })
@@ -129,6 +134,17 @@ export async function processInboundEmail(email: InboundEmail) {
     corpo: email.text ?? email.html ?? "",
     canal: "email",
   });
+
+  await notificarChamadoCriado(
+    {
+      id: novoChamado.id,
+      assunto: email.subject || "(sem assunto)",
+      prioridade,
+      projetoNome: projeto.nome,
+      slaPrazoResposta: slaResposta,
+    },
+    senderAddress,
+  );
 
   return { status: "created" as const, chamadoId: novoChamado.id, projeto: projeto.nome };
 }
