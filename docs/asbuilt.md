@@ -53,8 +53,8 @@
 - [x] Alerta visual antes do estouro do SLA — badge colorido (verde/amarelo/vermelho/neutro) na tela `/chamados`
 
 ### 🔵 FASE 04: PORTAL E PERFIS DE ACESSO
-**Status:** 🟡 Em andamento
-**Progresso:** 6/6 tarefas de código (100%) — falta provisionar a 1ª conta Administrador
+**Status:** ✅ Concluída
+**Progresso:** 6/6 tarefas (100%)
 
 #### Tarefas:
 - [x] Tela de login (usuário/senha) + "esqueci minha senha" — já implementada na Fase 01
@@ -64,7 +64,7 @@
 - [x] Perfil Administrador: cadastro de Grupos e Usuários (`/admin/grupos`, `/admin/usuarios` — provisionamento via `auth.admin.createUser`)
 - [x] Perfil Administrador: configuração de SLA e domínios por Projeto — editável na própria tela de Projetos
 
-**Pendência:** falta criar a primeira conta Administrador (bootstrap) — aguardando e-mail de preferência de Rafael.
+**Primeira conta Administrador:** `rafael@hubtech.tec.br` provisionada diretamente no banco (bootstrap — não dava pra usar a tela, que exige um Admin já logado). Senha temporária entregue a Rafael fora deste documento; recomendado trocar via "esqueci minha senha" no primeiro acesso.
 
 ### 🔵 FASE 05: BASE DE CONHECIMENTO
 **Status:** ⏳ Aguardando
