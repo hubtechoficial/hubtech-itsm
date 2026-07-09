@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getUsuarioAtual } from "@/lib/usuarios/current";
 import { getSlaStatus, SLA_STATUS_LABEL, SLA_STATUS_COLOR_CLASS } from "@/lib/chamados/sla";
-import { adicionarComentario } from "./actions";
+import { adicionarComentario, vincularArtigo } from "./actions";
 
 export default async function ChamadoDetalhePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -39,6 +39,22 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
 
   const slaStatus = getSlaStatus(chamado);
   const podeComentar = usuarioAtual?.perfil === "admin" || usuarioAtual?.perfil === "supervisor";
+  const ehAdmin = usuarioAtual?.perfil === "admin";
+
+  let artigosDisponiveis: { id: string; titulo: string }[] = [];
+  let artigosVinculados: { id: string; artigos: { titulo: string } | null }[] = [];
+
+  if (ehAdmin) {
+    const [{ data: artigos }, { data: vinculados }] = await Promise.all([
+      supabase.from("artigos_conhecimento").select("id, titulo").order("titulo"),
+      supabase
+        .from("chamado_artigos_consultados")
+        .select("id, artigos:artigo_id(titulo)")
+        .eq("chamado_id", id),
+    ]);
+    artigosDisponiveis = artigos ?? [];
+    artigosVinculados = (vinculados as never) ?? [];
+  }
 
   return (
     <main className="flex-1 px-6 py-10">
@@ -92,6 +108,45 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
               Enviar comentário
             </button>
           </form>
+        )}
+
+        {ehAdmin && (
+          <div className="mt-10 border-t border-white/10 pt-6">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-[2.5px] text-gray-medium">
+              Artigos consultados
+            </h2>
+
+            {artigosVinculados.length > 0 && (
+              <ul className="mb-4 flex flex-col gap-1 text-sm">
+                {artigosVinculados.map((vinculo) => (
+                  <li key={vinculo.id} className="text-gray-medium">
+                    • {vinculo.artigos?.titulo}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <form action={vincularArtigo.bind(null, id)} className="flex gap-2">
+              <select
+                name="artigo_id"
+                required
+                className="rounded-md border border-white/10 bg-surface px-3 py-2 text-sm outline-none focus:border-primary"
+              >
+                <option value="">Selecione um artigo...</option>
+                {artigosDisponiveis.map((artigo) => (
+                  <option key={artigo.id} value={artigo.id}>
+                    {artigo.titulo}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                className="rounded-md bg-primary px-4 py-2 text-sm font-semibold hover:bg-primary-dark"
+              >
+                Vincular
+              </button>
+            </form>
+          </div>
         )}
       </div>
     </main>

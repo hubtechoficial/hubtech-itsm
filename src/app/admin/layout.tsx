@@ -22,6 +22,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/admin/usuarios" className="text-gray-medium hover:text-white">
             Usuários
           </Link>
+          <Link href="/admin/artigos" className="text-gray-medium hover:text-white">
+            Base de Conhecimento
+          </Link>
           <Link href="/chamados" className="ml-auto text-gray-medium hover:text-white">
             ← Voltar aos chamados
           </Link>

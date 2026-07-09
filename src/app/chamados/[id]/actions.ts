@@ -28,3 +28,28 @@ export async function adicionarComentario(chamadoId: string, formData: FormData)
 
   revalidatePath(`/chamados/${chamadoId}`);
 }
+
+export async function vincularArtigo(chamadoId: string, formData: FormData) {
+  const artigoId = String(formData.get("artigo_id") ?? "");
+  if (!artigoId) return;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Não autenticado.");
+
+  const { error } = await supabase.from("chamado_artigos_consultados").insert({
+    chamado_id: chamadoId,
+    artigo_id: artigoId,
+    usuario_id: user.id,
+  });
+
+  if (error && error.code !== "23505") {
+    // 23505 = já vinculado (unique constraint) — ignora silenciosamente
+    throw new Error(`Não foi possível vincular o artigo: ${error.message}`);
+  }
+
+  revalidatePath(`/chamados/${chamadoId}`);
+}
