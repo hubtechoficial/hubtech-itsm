@@ -51,7 +51,7 @@ export default async function ChamadosPage({
   let query = supabase
     .from("chamados")
     .select(
-      "id, assunto, status, prioridade, sla_prazo_resolucao, resolvido_em, created_at, atribuido_a_usuario_id, atribuido:atribuido_a_usuario_id(nome)",
+      "id, numero, assunto, status, prioridade, sla_prazo_resolucao, resolvido_em, created_at, atribuido_a_usuario_id, atribuido:atribuido_a_usuario_id(nome), projetos(codigo)",
     );
 
   if (ehTecnico && projetoSelecionado) {
@@ -78,16 +78,30 @@ export default async function ChamadosPage({
     return Array.isArray(atribuido) ? (atribuido[0]?.nome ?? "— não atribuído —") : atribuido.nome;
   }
 
+  function codigoDoChamado(chamado: { numero: number; projetos: unknown }): string {
+    const projeto = chamado.projetos as { codigo: string } | { codigo: string }[] | null;
+    const codigo = Array.isArray(projeto) ? projeto[0]?.codigo : projeto?.codigo;
+    return codigo ? `${codigo}-${chamado.numero}` : String(chamado.numero);
+  }
+
   return (
     <main className="flex-1 px-6 py-10">
       <div className="mx-auto max-w-4xl">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold">{titulo}</h1>
-          {usuarioAtual?.perfil === "admin" && (
-            <Link href="/admin" className="text-sm text-primary hover:underline">
-              Administração
+          <div className="flex items-center gap-4">
+            <Link
+              href="/chamados/novo"
+              className="rounded-md bg-primary px-3 py-1.5 text-sm font-semibold hover:bg-primary-dark"
+            >
+              + Novo Chamado
             </Link>
-          )}
+            {usuarioAtual?.perfil === "admin" && (
+              <Link href="/admin" className="text-sm text-primary hover:underline">
+                Administração
+              </Link>
+            )}
+          </div>
         </div>
 
         {ehTecnico && projetosTecnico.length > 1 && (
@@ -148,6 +162,7 @@ export default async function ChamadosPage({
               <table className="w-full text-left text-sm">
                 <thead className="bg-surface text-xs uppercase tracking-[2.5px] text-gray-medium">
                   <tr>
+                    <th className="px-4 py-3">Código</th>
                     <th className="px-4 py-3">Assunto</th>
                     <th className="px-4 py-3">Status</th>
                     <th className="px-4 py-3">Prioridade</th>
@@ -164,6 +179,11 @@ export default async function ChamadosPage({
                         key={chamado.id}
                         className="cursor-pointer border-t border-white/10 bg-surface/40 hover:bg-surface"
                       >
+                        <td className="px-4 py-3">
+                          <Link href={`/chamados/${chamado.id}`} className="block font-mono text-xs text-gray-medium">
+                            {codigoDoChamado(chamado)}
+                          </Link>
+                        </td>
                         <td className="px-4 py-3">
                           <Link href={`/chamados/${chamado.id}`} className="block">
                             {chamado.assunto}

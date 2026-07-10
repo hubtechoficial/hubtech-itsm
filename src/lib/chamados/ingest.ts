@@ -63,7 +63,7 @@ export async function processInboundEmail(email: InboundEmail) {
 
   const { data: projeto } = await supabase
     .from("projetos")
-    .select("id, nome, sla_resposta_minutos, sla_resolucao_minutos, dominios_email")
+    .select("id, nome, codigo, sla_resposta_minutos, sla_resolucao_minutos, dominios_email")
     .contains("dominios_email", [senderDomain])
     .maybeSingle();
 
@@ -121,7 +121,7 @@ export async function processInboundEmail(email: InboundEmail) {
       sla_prazo_resposta: slaResposta,
       sla_prazo_resolucao: slaResolucao,
     })
-    .select("id")
+    .select("id, numero")
     .single();
 
   if (error || !novoChamado) {
@@ -138,6 +138,7 @@ export async function processInboundEmail(email: InboundEmail) {
   await notificarChamadoCriado(
     {
       id: novoChamado.id,
+      codigo: `${projeto.codigo}-${novoChamado.numero}`,
       assunto: email.subject || "(sem assunto)",
       prioridade,
       projetoNome: projeto.nome,

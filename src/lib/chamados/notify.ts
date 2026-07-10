@@ -5,6 +5,7 @@ const INTERNAL_TEAM_EMAIL = process.env.INTERNAL_NOTIFICATION_EMAIL;
 
 interface ChamadoCriado {
   id: string;
+  codigo?: string;
   assunto: string;
   prioridade: string;
   projetoNome: string;
@@ -19,12 +20,15 @@ function formatarPrazo(iso: string | null): string {
 export async function notificarChamadoCriado(chamado: ChamadoCriado, requesterEmail: string) {
   const resend = createResendClient();
 
+  const prefixo = chamado.codigo ? `[${chamado.codigo}] ` : "";
+
   await resend.emails.send({
     from: SUPPORT_EMAIL,
     to: requesterEmail,
-    subject: `Chamado recebido: ${chamado.assunto}`,
+    subject: `Chamado recebido: ${prefixo}${chamado.assunto}`,
     text:
       `Recebemos seu chamado e nosso time já foi notificado.\n\n` +
+      (chamado.codigo ? `Código: ${chamado.codigo}\n` : "") +
       `Assunto: ${chamado.assunto}\n` +
       `Prioridade: ${chamado.prioridade}\n` +
       `Prazo de primeira resposta: ${formatarPrazo(chamado.slaPrazoResposta)}\n\n` +
@@ -35,9 +39,10 @@ export async function notificarChamadoCriado(chamado: ChamadoCriado, requesterEm
     await resend.emails.send({
       from: SUPPORT_EMAIL,
       to: INTERNAL_TEAM_EMAIL,
-      subject: `[Novo chamado] ${chamado.projetoNome} — ${chamado.assunto}`,
+      subject: `[Novo chamado] ${prefixo}${chamado.projetoNome} — ${chamado.assunto}`,
       text:
         `Novo chamado aberto.\n\n` +
+        (chamado.codigo ? `Código: ${chamado.codigo}\n` : "") +
         `Projeto: ${chamado.projetoNome}\n` +
         `Assunto: ${chamado.assunto}\n` +
         `Prioridade: ${chamado.prioridade}\n` +

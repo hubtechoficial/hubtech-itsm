@@ -5,7 +5,7 @@ export default async function AdminProjetosPage() {
   const supabase = await createClient();
   const { data: projetos } = await supabase
     .from("projetos")
-    .select("id, nome, dominios_email, sla_resposta_minutos, sla_resolucao_minutos")
+    .select("id, nome, codigo, dominios_email, sla_resposta_minutos, sla_resolucao_minutos")
     .order("nome");
 
   return (
@@ -19,7 +19,9 @@ export default async function AdminProjetosPage() {
             action={atualizarProjeto.bind(null, projeto.id)}
             className="rounded-lg border border-white/10 bg-surface/40 p-4"
           >
-            <h3 className="mb-3 font-semibold">{projeto.nome}</h3>
+            <h3 className="mb-3 font-semibold">
+              {projeto.nome} <span className="font-mono text-xs text-gray-medium">{projeto.codigo}</span>
+            </h3>
             <div className="flex flex-wrap gap-4">
               <div className="flex flex-1 min-w-[200px] flex-col gap-1">
                 <label className="text-xs font-semibold uppercase tracking-[2.5px] text-gray-medium">
@@ -82,6 +84,20 @@ export default async function AdminProjetosPage() {
             name="nome"
             required
             className="rounded-md border border-white/10 bg-surface px-3 py-2 text-sm outline-none focus:border-primary"
+          />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label htmlFor="codigo" className="text-xs font-semibold uppercase tracking-[2.5px] text-gray-medium">
+            Código curto (ex: CUR, SEM — usado como CUR-1, CUR-2...)
+          </label>
+          <input
+            id="codigo"
+            name="codigo"
+            required
+            maxLength={6}
+            placeholder="CUR"
+            className="rounded-md border border-white/10 bg-surface px-3 py-2 text-sm uppercase outline-none focus:border-primary"
           />
         </div>
 

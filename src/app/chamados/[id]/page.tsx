@@ -21,7 +21,7 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
     supabase
       .from("chamados")
       .select(
-        "id, assunto, status, prioridade, sla_prazo_resolucao, resolvido_em, created_at, atribuido_a_usuario_id, projetos(nome), atribuido:atribuido_a_usuario_id(nome)",
+        "id, numero, assunto, status, prioridade, tipo_item, sla_prazo_resolucao, resolvido_em, created_at, atribuido_a_usuario_id, projetos(nome, codigo), atribuido:atribuido_a_usuario_id(nome)",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -51,6 +51,11 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
   const nomeResponsavel = nomeDe(chamado.atribuido as PessoaRef);
   const chamadoENosso = chamado.atribuido_a_usuario_id === user.id;
 
+  type ProjetoRef = { nome: string; codigo: string } | { nome: string; codigo: string }[] | null;
+  const projetoInfo = chamado.projetos as ProjetoRef;
+  const projeto = Array.isArray(projetoInfo) ? projetoInfo[0] : projetoInfo;
+  const codigoChamado = projeto ? `${projeto.codigo}-${chamado.numero}` : String(chamado.numero);
+
   type ArtigoRef = { titulo: string } | { titulo: string }[] | null;
   let artigosDisponiveis: { id: string; titulo: string }[] = [];
   let artigosVinculados: { id: string; artigos: ArtigoRef }[] = [];
@@ -79,11 +84,15 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
           ← Voltar
         </Link>
 
-        <h1 className="mt-4 mb-2 text-2xl font-bold">{chamado.assunto}</h1>
+        <p className="mt-4 font-mono text-xs text-gray-medium">{codigoChamado}</p>
+        <h1 className="mb-2 text-2xl font-bold">{chamado.assunto}</h1>
 
         <div className="mb-4 flex flex-wrap gap-2 text-xs">
           <span className="rounded-lg bg-surface px-2 py-1 capitalize text-gray-medium">
             {chamado.status}
+          </span>
+          <span className="rounded-lg bg-surface px-2 py-1 capitalize text-gray-medium">
+            {chamado.tipo_item}
           </span>
           <span className="rounded-lg bg-surface px-2 py-1 capitalize text-gray-medium">
             Prioridade: {chamado.prioridade}
