@@ -154,14 +154,18 @@ Nova página `/painel`, que passou a ser a tela de entrada (`/` e o login redire
 **Limpeza feita durante o teste:** o teste de upload de foto da Fase 09 tinha deixado uma imagem de teste (transparente, 1×1px) configurada como avatar real do admin `rafael@hubtech.tec.br` — corrigido (nome e foto restaurados, arquivo removido do Storage).
 
 ### 🔵 FASE 11: ANEXOS
-**Status:** ⏳ Aguardando (SHOULD HAVE — aprovado por Rafael após parecer técnico do Hades)
-**Progresso:** 0/4 tarefas (0%)
+**Status:** ✅ Concluída (SHOULD HAVE — aprovado por Rafael após parecer técnico do Hades)
+**Progresso:** 4/4 tarefas (100%)
 
 #### Tarefas:
-- [ ] Bucket no Supabase Storage + policies espelhando a visibilidade de `chamados`
-- [ ] Captura de anexos vindos por e-mail (API de Attachments do Resend)
-- [ ] Upload de anexo pelo portal (criação de chamado e comentário)
-- [ ] Exibição/download de anexo na tela de detalhe do chamado
+- [x] Bucket no Supabase Storage + policies espelhando a visibilidade de `chamados` — bucket privado `anexos-chamados` (10MB/arquivo, allowlist de tipos), RLS via 2 funções `SECURITY DEFINER` (`pode_ver_chamado`/`pode_anexar_em_chamado`) reaproveitadas na tabela `chamado_anexos` e nas policies de `storage.objects`
+- [x] Captura de anexos vindos por e-mail (API de Attachments do Resend) — baixa via URL assinada e sobe pro bucket, ignorado (sem travar o chamado) se o anexo for grande demais ou de tipo não permitido
+- [x] Upload de anexo pelo portal (criação de chamado e comentário) — `src/lib/chamados/anexos.ts`, reaproveitado nos dois fluxos
+- [x] Exibição/download de anexo na tela de detalhe do chamado — link com signed URL (bucket privado, diferente do `avatars` que é público)
+
+**Bug crítico encontrado e corrigido no caminho (migration `0011`, antes desta feature):** a policy `mensagens_insert` nunca tinha sido atualizada quando o perfil Básico passou a poder abrir chamado pelo portal (Fase 08) — o chamado era criado, mas a descrição (primeira mensagem) era bloqueada pelo RLS e o erro não era verificado no código, então o usuário via a tela de sucesso e a descrição do problema desaparecia silenciosamente. Corrigido e verificado com teste real (usuário Básico descartável).
+
+**🟡 Pendência de validação:** a captura de anexo vindo por e-mail não pôde ser testada ponta-a-ponta (precisa de um e-mail real recebido pela Resend com anexo — mesma limitação já registrada na validação da Fase 02). Os caminhos de erro (anexo grande demais, tipo não permitido) foram cobertos por revisão de código. Recomendo Rafael enviar um e-mail de teste real com um anexo antes da Fase 12 (Produção) para fechar essa validação.
 
 ### 🔵 FASE 12: PRODUÇÃO (FINAL DA V1.1)
 **Status:** ⏳ Aguardando
