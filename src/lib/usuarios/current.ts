@@ -9,6 +9,7 @@ export interface UsuarioAtual {
   perfil: Perfil;
   projetoId: string | null;
   grupoId: string | null;
+  fotoUrl: string | null;
 }
 
 export async function getUsuarioAtual(): Promise<UsuarioAtual | null> {
@@ -21,7 +22,7 @@ export async function getUsuarioAtual(): Promise<UsuarioAtual | null> {
 
   const { data } = await supabase
     .from("usuarios")
-    .select("id, nome, email, perfil, projeto_id, grupo_id")
+    .select("id, nome, email, perfil, projeto_id, grupo_id, foto_url")
     .eq("id", user.id)
     .single();
 
@@ -34,6 +35,7 @@ export async function getUsuarioAtual(): Promise<UsuarioAtual | null> {
     perfil: data.perfil,
     projetoId: data.projeto_id,
     grupoId: data.grupo_id,
+    fotoUrl: data.foto_url,
   };
 }
 
