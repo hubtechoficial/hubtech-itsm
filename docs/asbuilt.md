@@ -102,16 +102,18 @@
 Levantada por Rafael após ver a V1 em produção, usando o Jira como referência de UX. Ver `docs/memoria/projeto.md` e `moscow.md` para a spec completa.
 
 ### 🔵 FASE 07: PERFIL TÉCNICO E FILA COMPARTILHADA
-**Status:** ⏳ Aguardando
-**Progresso:** 0/6 tarefas (0%)
+**Status:** ✅ Concluída
+**Progresso:** 6/6 tarefas (100%)
 
 #### Tarefas:
-- [ ] Migration: novo valor `tecnico` no enum de perfil, tabela `tecnico_projetos` (vínculo N:N), coluna `atribuido_a_usuario_id` em `chamados`
-- [ ] RLS: Técnico vê/interage em todos os chamados dos Projetos vinculados a ele (sem restrição de Grupo)
-- [ ] Ação "pegar chamado" (auto-atribuição) e "devolver à fila"
-- [ ] Ordenação da fila: prioridade (desc) + criado (asc)
-- [ ] Filtros rápidos: "Meus chamados", "Não atribuídos", "Todos do Projeto"
-- [ ] Cadastro de vínculo Técnico ↔ Projeto pelo Administrador (`/admin`)
+- [x] Migration: novo valor `tecnico` no enum de perfil, tabela `tecnico_projetos` (vínculo N:N), coluna `atribuido_a_usuario_id` em `chamados` (`0004`, `0005`, aplicadas em produção)
+- [x] RLS: Técnico vê/interage em todos os chamados dos Projetos vinculados a ele (sem restrição de Grupo) — testado com usuários reais, isolamento entre Projetos confirmado
+- [x] Ação "pegar chamado" (auto-atribuição) e "devolver à fila" — verificado com navegador real + checagem direta no banco
+- [x] Ordenação da fila: prioridade (desc) + criado (asc)
+- [x] Filtros rápidos: "Meus chamados", "Não atribuídos", "Todos do Projeto"
+- [x] Cadastro de vínculo Técnico ↔ Projeto pelo Administrador (`/admin/usuarios` — criação com múltiplos Projetos + adicionar/remover vínculo depois)
+
+**Bug encontrado e corrigido durante o teste:** RLS de `projetos` não permitia ao Técnico ler os Projetos vinculados a ele (só previa Admin ou o Projeto fixo de Básico/Supervisor) — o seletor de Projeto ficava invisível porque o join retornava `null` silenciosamente. Corrigido na migration `0006`.
 
 ### 🔵 FASE 08: PORTAL DE ABERTURA E TIPO DE ITEM
 **Status:** ⏳ Aguardando
