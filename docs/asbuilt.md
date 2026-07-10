@@ -128,13 +128,19 @@ Levantada por Rafael após ver a V1 em produção, usando o Jira como referênci
 Testado com navegador real (Básico e Técnico criando chamado pelo portal) e verificado que o RLS bloqueia tentativa de abrir chamado em Projeto que não é o do usuário, mesmo contornando a tela.
 
 ### 🔵 FASE 09: NAVEGAÇÃO E PERFIL
-**Status:** ⏳ Aguardando
-**Progresso:** 0/3 tarefas (0%)
+**Status:** ✅ Concluída
+**Progresso:** 3/3 tarefas (100%)
 
 #### Tarefas:
-- [ ] Seletor de Projeto no topo (Técnicos com mais de 1 Projeto vinculado)
-- [ ] Menu de perfil (canto superior direito) com link pra configurações
-- [ ] Tela de configurações de conta: foto de perfil, trocar senha
+- [x] Seletor de Projeto no topo (Técnicos com mais de 1 Projeto vinculado) — já entregue na Fase 07
+- [x] Menu de perfil (canto superior direito) com link pra configurações — header compartilhado em `(app)/layout.tsx`, aplicado a todas as páginas autenticadas (pastas `chamados/` e `admin/` movidas para o route group `(app)/`, URLs inalteradas)
+- [x] Tela de configurações de conta: foto de perfil, trocar senha — `/configuracoes`, com upload pro bucket `avatars` do Storage e troca de nome/senha
+
+**Migrations:** `0009` (coluna `foto_url` + bucket `avatars` com policies de Storage) e `0010` (usuário pode atualizar o próprio nome/foto).
+
+**Ponto de atenção de segurança tratado proativamente:** uma policy de RLS comum (`using id = auth.uid()`) protegeria a *linha*, mas não a *coluna* — sem restrição adicional, o próprio usuário conseguiria se auto-promover a Administrador num UPDATE direto na tabela `usuarios`. Corrigido combinando a policy de RLS com `revoke/grant` restringindo a escrita a colunas específicas (`nome`, `foto_url`). Validado com teste de exploit real: tentativa de auto-promoção bloqueada com "permission denied for table usuarios".
+
+**Bug encontrado e corrigido durante o teste com navegador real:** a Content-Security-Policy adicionada em `next.config.ts` (Fase 06) bloqueava o carregamento das próprias imagens de avatar, hospedadas no Supabase Storage — `img-src` não incluía `https://*.supabase.co`. Corrigido e revalidado (0 erros de console após o ajuste).
 
 ### 🔵 FASE 10: PAINÉIS (DASHBOARDS)
 **Status:** ⏳ Aguardando
@@ -169,4 +175,4 @@ Testado com navegador real (Básico e Técnico criando chamado pelo portal) e ve
 | 2026-07-08 | Shiva conduziu Descoberta completa e formalizou spec (projeto.md, moscow.md, design-system.json). Hades recebeu a spec e definiu stack + roadmap faseado. |
 | 2026-07-08 | Atlas executou e concluiu a Fase 01: repositório GitHub, scaffold Next.js, Supabase (schema + RLS aplicados em produção), design tokens, autenticação, Vercel linkado com env vars, GitFlow (dev/hml/main) publicado. |
 | 2026-07-09 | Fases 02 a 05 concluídas (ingestão por e-mail, SLA/notificações, portal com 3 perfis, Base de Conhecimento). Ravena aprovou QA com navegador real (1 bug de mobile corrigido). Kerberos aprovou segurança após corrigir 1 falha crítica de escalação de privilégio e 2 importantes. Merge `dev → hml → main` com aprovação explícita de Rafael. Deploy em produção concluído após resolver bloqueio de Deployment Protection do Vercel. **V1 do Hub Tech ITSM está no ar.** |
-| 2026-07-10 | Rafael trouxe feedback pós-lançamento usando o Jira como referência. Shiva conduziu nova Descoberta: perfil Técnico (multi-Projeto), abertura de chamado pelo portal pra todos, painéis por perfil, navegação com seletor de Projeto, menu de perfil. Hades avaliou viabilidade de anexos (aprovado como SHOULD HAVE, Supabase Storage, custo zero) e definiu roadmap da V1.1 (Fases 07-12), aprovado por Rafael. |
+| 2026-07-10 | Rafael trouxe feedback pós-lançamento usando o Jira como referência. Shiva conduziu nova Descoberta: perfil Técnico (multi-Projeto), abertura de chamado pelo portal pra todos, painéis por perfil, navegação com seletor de Projeto, menu de perfil. Hades avaliou viabilidade de anexos (aprovado como SHOULD HAVE, Supabase Storage, custo zero) e definiu roadmap da V1.1 (Fases 07-12), aprovado por Rafael. Atlas concluiu as Fases 07, 08 e 09 (perfil Técnico, portal de abertura, navegação/menu de perfil/configurações), com testes reais de navegador em cada uma e 3 bugs encontrados e corrigidos ao longo do caminho (RLS de projetos pro Técnico, CSP bloqueando avatar, e a proteção proativa contra auto-promoção via UPDATE). |
