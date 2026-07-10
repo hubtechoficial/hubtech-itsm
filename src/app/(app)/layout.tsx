@@ -8,13 +8,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-full flex-col">
       <header className="border-b border-white/10 px-6 py-4">
-        <div className="mx-auto flex max-w-4xl items-center justify-between">
+        <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-y-2">
           <div className="flex items-center gap-6">
-            <Link href="/painel" className="font-display text-lg font-bold">
+            <Link href="/painel" className="whitespace-nowrap font-display text-lg font-bold">
               Hub Tech ITSM
             </Link>
             {usuarioAtual && (
-              <nav className="flex items-center gap-4 text-sm text-gray-medium">
+              <nav className="flex items-center gap-4 whitespace-nowrap text-sm text-gray-medium">
                 <Link href="/painel" className="hover:text-white">
                   Painel
                 </Link>
