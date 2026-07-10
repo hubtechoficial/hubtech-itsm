@@ -116,14 +116,16 @@ Levantada por Rafael após ver a V1 em produção, usando o Jira como referênci
 **Bug encontrado e corrigido durante o teste:** RLS de `projetos` não permitia ao Técnico ler os Projetos vinculados a ele (só previa Admin ou o Projeto fixo de Básico/Supervisor) — o seletor de Projeto ficava invisível porque o join retornava `null` silenciosamente. Corrigido na migration `0006`.
 
 ### 🔵 FASE 08: PORTAL DE ABERTURA E TIPO DE ITEM
-**Status:** ⏳ Aguardando
-**Progresso:** 0/4 tarefas (0%)
+**Status:** ✅ Concluída
+**Progresso:** 4/4 tarefas (100%)
 
 #### Tarefas:
-- [ ] Abertura de chamado direto pelo portal, para todos os perfis
-- [ ] Campo "Tipo de Item" (Incidente / Solicitação de Serviço / Dúvida)
-- [ ] Código curto sequencial por Projeto (ex: `CUR-1`, `SEM-1`)
-- [ ] Coluna "Responsável" na listagem de chamados
+- [x] Abertura de chamado direto pelo portal, para todos os perfis (`/chamados/novo`) — Projeto fixo para Básico/Supervisor, seletor para Técnico/Admin
+- [x] Campo "Tipo de Item" (Incidente / Solicitação de Serviço / Dúvida)
+- [x] Código curto sequencial por Projeto (ex: `CUR-1`, `SEM-1`) — trigger automático, com backfill dos chamados existentes; campo `codigo` também no cadastro de Projeto
+- [x] Coluna "Responsável" na listagem de chamados — já entregue na Fase 07
+
+Testado com navegador real (Básico e Técnico criando chamado pelo portal) e verificado que o RLS bloqueia tentativa de abrir chamado em Projeto que não é o do usuário, mesmo contornando a tela.
 
 ### 🔵 FASE 09: NAVEGAÇÃO E PERFIL
 **Status:** ⏳ Aguardando
