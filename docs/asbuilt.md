@@ -1,9 +1,9 @@
 # Hub Tech ITSM — Sistema de Registro de Chamados Técnicos
 
-**Descrição:** Sistema de ITSM multi-tenant para os contratos de terceirização de suporte da Hub Tech. Chamados entram por e-mail institucional, ficam isolados por Projeto (contrato), com SLA configurável e portal de consulta com 3 perfis de acesso.
-**Stack:** Next.js + Supabase (Postgres + Auth + RLS) + Vercel + Resend (e-mail transacional e recebimento) + GitHub (`hubtechoficial/hubtech-itsm`)
-**Última atualização:** 2026-07-09
-**Status geral:** 🎉 V1 em produção — todas as 6 fases do roadmap concluídas
+**Descrição:** Sistema de ITSM multi-tenant para os contratos de terceirização de suporte da Hub Tech. Chamados entram por e-mail institucional ou portal, ficam isolados por Projeto (contrato), com SLA configurável, fila de atendimento por Técnico e portal com 4 perfis de acesso.
+**Stack:** Next.js + Supabase (Postgres + Auth + RLS + Storage) + Vercel + Resend (e-mail transacional e recebimento) + GitHub (`hubtechoficial/hubtech-itsm`)
+**Última atualização:** 2026-07-10
+**Status geral:** 🎉 V1 em produção · 🟡 V1.1 em planejamento (perfil Técnico, portal de abertura, painéis, anexos)
 
 ## Roadmap de Implementação
 
@@ -95,9 +95,74 @@
 
 **🎉 Sistema em produção:** https://hubtech-itsm-hub-tech-oficial.vercel.app
 
+---
+
+# Expansão V1.1 (pós-lançamento)
+
+Levantada por Rafael após ver a V1 em produção, usando o Jira como referência de UX. Ver `docs/memoria/projeto.md` e `moscow.md` para a spec completa.
+
+### 🔵 FASE 07: PERFIL TÉCNICO E FILA COMPARTILHADA
+**Status:** ⏳ Aguardando
+**Progresso:** 0/6 tarefas (0%)
+
+#### Tarefas:
+- [ ] Migration: novo valor `tecnico` no enum de perfil, tabela `tecnico_projetos` (vínculo N:N), coluna `atribuido_a_usuario_id` em `chamados`
+- [ ] RLS: Técnico vê/interage em todos os chamados dos Projetos vinculados a ele (sem restrição de Grupo)
+- [ ] Ação "pegar chamado" (auto-atribuição) e "devolver à fila"
+- [ ] Ordenação da fila: prioridade (desc) + criado (asc)
+- [ ] Filtros rápidos: "Meus chamados", "Não atribuídos", "Todos do Projeto"
+- [ ] Cadastro de vínculo Técnico ↔ Projeto pelo Administrador (`/admin`)
+
+### 🔵 FASE 08: PORTAL DE ABERTURA E TIPO DE ITEM
+**Status:** ⏳ Aguardando
+**Progresso:** 0/4 tarefas (0%)
+
+#### Tarefas:
+- [ ] Abertura de chamado direto pelo portal, para todos os perfis
+- [ ] Campo "Tipo de Item" (Incidente / Solicitação de Serviço / Dúvida)
+- [ ] Código curto sequencial por Projeto (ex: `CUR-1`, `SEM-1`)
+- [ ] Coluna "Responsável" na listagem de chamados
+
+### 🔵 FASE 09: NAVEGAÇÃO E PERFIL
+**Status:** ⏳ Aguardando
+**Progresso:** 0/3 tarefas (0%)
+
+#### Tarefas:
+- [ ] Seletor de Projeto no topo (Técnicos com mais de 1 Projeto vinculado)
+- [ ] Menu de perfil (canto superior direito) com link pra configurações
+- [ ] Tela de configurações de conta: foto de perfil, trocar senha
+
+### 🔵 FASE 10: PAINÉIS (DASHBOARDS)
+**Status:** ⏳ Aguardando
+**Progresso:** 0/1 tarefa (0%)
+
+#### Tarefas:
+- [ ] Dashboard por perfil — cartões coloridos + contagens (Básico: próprios · Supervisor: do Grupo · Técnico: fila do Projeto selecionado · Admin: visão geral)
+
+### 🔵 FASE 11: ANEXOS
+**Status:** ⏳ Aguardando (SHOULD HAVE — aprovado por Rafael após parecer técnico do Hades)
+**Progresso:** 0/4 tarefas (0%)
+
+#### Tarefas:
+- [ ] Bucket no Supabase Storage + policies espelhando a visibilidade de `chamados`
+- [ ] Captura de anexos vindos por e-mail (API de Attachments do Resend)
+- [ ] Upload de anexo pelo portal (criação de chamado e comentário)
+- [ ] Exibição/download de anexo na tela de detalhe do chamado
+
+### 🔵 FASE 12: PRODUÇÃO (FINAL DA V1.1)
+**Status:** ⏳ Aguardando
+**Progresso:** 0/4 tarefas (0%)
+
+#### Tarefas:
+- [ ] QA funcional completo (Ravena)
+- [ ] Auditoria de segurança (Kerberos) — atenção especial ao RLS do perfil Técnico e às policies do Storage
+- [ ] Merge `dev → hml → main`
+- [ ] Deploy em produção (Vercel)
+
 ## Histórico de Sessões
 | Data | O que foi feito |
 |------|----------------|
 | 2026-07-08 | Shiva conduziu Descoberta completa e formalizou spec (projeto.md, moscow.md, design-system.json). Hades recebeu a spec e definiu stack + roadmap faseado. |
 | 2026-07-08 | Atlas executou e concluiu a Fase 01: repositório GitHub, scaffold Next.js, Supabase (schema + RLS aplicados em produção), design tokens, autenticação, Vercel linkado com env vars, GitFlow (dev/hml/main) publicado. |
 | 2026-07-09 | Fases 02 a 05 concluídas (ingestão por e-mail, SLA/notificações, portal com 3 perfis, Base de Conhecimento). Ravena aprovou QA com navegador real (1 bug de mobile corrigido). Kerberos aprovou segurança após corrigir 1 falha crítica de escalação de privilégio e 2 importantes. Merge `dev → hml → main` com aprovação explícita de Rafael. Deploy em produção concluído após resolver bloqueio de Deployment Protection do Vercel. **V1 do Hub Tech ITSM está no ar.** |
+| 2026-07-10 | Rafael trouxe feedback pós-lançamento usando o Jira como referência. Shiva conduziu nova Descoberta: perfil Técnico (multi-Projeto), abertura de chamado pelo portal pra todos, painéis por perfil, navegação com seletor de Projeto, menu de perfil. Hades avaliou viabilidade de anexos (aprovado como SHOULD HAVE, Supabase Storage, custo zero) e definiu roadmap da V1.1 (Fases 07-12), aprovado por Rafael. |
