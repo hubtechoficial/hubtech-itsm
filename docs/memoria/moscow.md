@@ -42,6 +42,11 @@ Levantado em 2026-07-10, após a V1 entrar em produção. Ver `projeto.md` para 
 5. Seletor de Projeto no topo da navegação, para Técnicos vinculados a mais de 1 Projeto
 6. Painéis (dashboards) por perfil — versão enxuta: cartões coloridos por status/SLA + contagens simples (Básico: próprios chamados · Supervisor: chamados do Grupo · Técnico: fila do Projeto selecionado · Administrador: visão geral)
 7. Cadastro de vínculo Técnico ↔ Projeto pelo Administrador (tela de gestão)
+8. **Ordenação padrão da fila do Técnico:** prioridade (decrescente) e depois data de criação (mais antigo primeiro) — garante que chamado urgente e chamado esquecido não fiquem escondidos
+9. **Filtros rápidos pré-definidos** na fila do Técnico: "Meus chamados" (atribuídos a mim), "Não atribuídos" (disponíveis pra pegar), "Todos do Projeto selecionado"
+10. **Coluna "Responsável"** na listagem — mostra qual Técnico já pegou cada chamado (ou "não atribuído")
+11. **Código curto sequencial por Projeto** (ex: `CUR-1`, `SEM-1`) — substitui/complementa o UUID interno como referência legível do chamado
+12. **Tipo de item do chamado** (ex: Incidente, Solicitação de Serviço, Dúvida) — campo definido na abertura, exibido com ícone/badge na listagem (retoma o que estava como "catálogo de solicitações padronizadas" da V1 original)
 
 ## SHOULD HAVE
 - Ação de "devolver à fila" (Técnico desiste do chamado que pegou, volta a ficar disponível pra outro)
@@ -50,6 +55,12 @@ Levantado em 2026-07-10, após a V1 entrar em produção. Ver `projeto.md` para 
 - Gráfico de tendência nos painéis (criados x resolvidos ao longo do tempo) — fica pra quando o volume de chamados crescer o suficiente pra esse gráfico contar uma história
 - Reatribuição de chamado entre Técnicos pelo Administrador
 
+## EM AVALIAÇÃO TÉCNICA (Hades)
+- **Anexos (upload de arquivo) no chamado** — Rafael confirmou que é importante (print de erro ajuda o Técnico), mas quer entender a viabilidade técnica antes de comprometer o escopo. Hades precisa avaliar: armazenamento (Supabase Storage), limite de tamanho, como recebe anexo vindo por e-mail (Resend já entrega anexos no payload) vs upload direto pelo portal, e custo. Decisão de escopo (Must/Should/Could) fica pendente do retorno técnico.
+
 ## WON'T HAVE (por agora)
 - Atribuição automática de chamado (por carga de trabalho, round-robin, etc.) — v1.1 é sempre "fila compartilhada, Técnico escolhe"
 - Painel com múltiplos gadgets/gráficos no estilo Jira completo — versão enxuta primeiro, evolui com o volume
+- Busca avançada por query (JQL) — poder de mercado desproporcional ao nosso volume
+- Conceito de "Epic" (agrupamento de itens) — não se aplica a chamado de suporte
+- Exportar/compartilhar lista de chamados

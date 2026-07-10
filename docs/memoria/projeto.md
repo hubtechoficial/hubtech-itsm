@@ -62,6 +62,10 @@ Endereço de recebimento: **suporte@chamados.hubtech.tec.br** — subdomínio de
 - Recuperação de senha ("esqueci minha senha") via e-mail.
 - Consulta: status, histórico de mensagens e prazo de SLA dos chamados visíveis ao perfil do usuário logado.
 - **Abertura de chamado pelo portal (v1.1 — revisto):** todos os perfis podem abrir chamado direto pelo portal, além do e-mail (que continua existindo como canal "fácil" pro cliente que prefere simplesmente mandar um e-mail).
+- **Tipo de item** (Incidente, Solicitação de Serviço, Dúvida — a definir a lista exata com o Hades/Atlas) escolhido na abertura do chamado, exibido com ícone/badge na listagem.
+- **Código curto sequencial por Projeto** (ex: `CUR-1`, `SEM-1`) como referência legível do chamado, em vez do UUID interno.
+- **Fila do Técnico:** ordenada por prioridade (desc) e depois data de criação (mais antigo primeiro); com filtros rápidos "Meus chamados", "Não atribuídos", "Todos do Projeto"; coluna "Responsável" mostrando quem já pegou cada chamado.
+- **Anexos (upload de arquivo):** importante pro Rafael (print de erro ajuda o Técnico), mas viabilidade técnica (armazenamento, tamanho, origem e-mail vs portal) ainda em avaliação pelo Hades antes de entrar no escopo formal.
 - **Menu de perfil** (canto superior direito): acesso a configurações da conta, incluindo foto de perfil.
 - **Seletor de Projeto** (topo, visível para Técnicos vinculados a mais de 1 Projeto): escolhe um Projeto de cada vez; a tela mostra somente os dados daquele Projeto selecionado.
 - **Painéis (dashboards)** por perfil — versão enxuta na v1.1 (cartões coloridos por status/SLA + contagens simples; sem gráfico de tendência ainda, fica pra quando o volume justificar):
