@@ -27,3 +27,29 @@
 - Gestão de Problemas, Gestão de Mudanças e Gestão de Ativos (CMDB)
 - Canais adicionais de abertura (WhatsApp, Teams etc.)
 - Autocadastro de usuários no portal (contas são sempre provisionadas pelo Administrador na v1)
+
+---
+
+# Priorização MoSCoW — Expansão V1.1 (pós-lançamento)
+
+Levantado em 2026-07-10, após a V1 entrar em produção. Ver `projeto.md` para o modelo de dados atualizado.
+
+## MUST HAVE
+1. Novo perfil **Técnico**: vinculado a 1 ou mais Projetos pelo Administrador; dentro de cada Projeto vinculado, vê e atende todos os chamados (sem restrição de Grupo/Setor)
+2. Fila compartilhada de chamados por Projeto — chamado novo não é atribuído a ninguém; qualquer Técnico daquele Projeto pode "pegar" o chamado (atribuição manual)
+3. Abertura de chamado direto pelo portal, para todos os perfis (Básico, Supervisor, Técnico, Administrador) — e-mail continua funcionando em paralelo
+4. Menu de perfil (canto superior direito) com acesso a configurações da conta e foto de perfil
+5. Seletor de Projeto no topo da navegação, para Técnicos vinculados a mais de 1 Projeto
+6. Painéis (dashboards) por perfil — versão enxuta: cartões coloridos por status/SLA + contagens simples (Básico: próprios chamados · Supervisor: chamados do Grupo · Técnico: fila do Projeto selecionado · Administrador: visão geral)
+7. Cadastro de vínculo Técnico ↔ Projeto pelo Administrador (tela de gestão)
+
+## SHOULD HAVE
+- Ação de "devolver à fila" (Técnico desiste do chamado que pegou, volta a ficar disponível pra outro)
+
+## COULD HAVE
+- Gráfico de tendência nos painéis (criados x resolvidos ao longo do tempo) — fica pra quando o volume de chamados crescer o suficiente pra esse gráfico contar uma história
+- Reatribuição de chamado entre Técnicos pelo Administrador
+
+## WON'T HAVE (por agora)
+- Atribuição automática de chamado (por carga de trabalho, round-robin, etc.) — v1.1 é sempre "fila compartilhada, Técnico escolhe"
+- Painel com múltiplos gadgets/gráficos no estilo Jira completo — versão enxuta primeiro, evolui com o volume
