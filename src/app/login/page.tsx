@@ -27,7 +27,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/chamados");
+    router.push("/painel");
     router.refresh();
   }
 

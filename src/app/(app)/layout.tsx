@@ -9,9 +9,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-full flex-col">
       <header className="border-b border-white/10 px-6 py-4">
         <div className="mx-auto flex max-w-4xl items-center justify-between">
-          <Link href="/chamados" className="font-display text-lg font-bold">
-            Hub Tech ITSM
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link href="/painel" className="font-display text-lg font-bold">
+              Hub Tech ITSM
+            </Link>
+            {usuarioAtual && (
+              <nav className="flex items-center gap-4 text-sm text-gray-medium">
+                <Link href="/painel" className="hover:text-white">
+                  Painel
+                </Link>
+                <Link href="/chamados" className="hover:text-white">
+                  Chamados
+                </Link>
+              </nav>
+            )}
+          </div>
 
           {usuarioAtual && (
             <details className="relative">
