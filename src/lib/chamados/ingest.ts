@@ -90,12 +90,15 @@ export async function processInboundEmail(email: InboundEmail) {
   }
 
   if (chamadoId) {
-    await supabase.from("chamado_mensagens").insert({
+    const { error: mensagemError } = await supabase.from("chamado_mensagens").insert({
       chamado_id: chamadoId,
       autor_email: senderAddress,
       corpo: email.text ?? email.html ?? "",
       canal: "email",
     });
+    if (mensagemError) {
+      throw new Error(`Falha ao registrar mensagem: ${mensagemError.message}`);
+    }
 
     return { status: "threaded" as const, chamadoId };
   }
@@ -128,12 +131,15 @@ export async function processInboundEmail(email: InboundEmail) {
     throw new Error(`Falha ao criar chamado: ${error?.message}`);
   }
 
-  await supabase.from("chamado_mensagens").insert({
+  const { error: mensagemError } = await supabase.from("chamado_mensagens").insert({
     chamado_id: novoChamado.id,
     autor_email: senderAddress,
     corpo: email.text ?? email.html ?? "",
     canal: "email",
   });
+  if (mensagemError) {
+    throw new Error(`Falha ao registrar mensagem: ${mensagemError.message}`);
+  }
 
   await notificarChamadoCriado(
     {

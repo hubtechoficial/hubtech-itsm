@@ -79,13 +79,17 @@ export async function criarChamadoPortal(formData: FormData) {
     throw new Error(`Não foi possível criar o chamado: ${error?.message}`);
   }
 
-  await supabase.from("chamado_mensagens").insert({
+  const { error: mensagemError } = await supabase.from("chamado_mensagens").insert({
     chamado_id: novoChamado.id,
     autor_usuario_id: usuarioAtual.id,
     autor_email: usuarioAtual.email,
     corpo: descricao,
     canal: "portal",
   });
+
+  if (mensagemError) {
+    throw new Error(`Não foi possível salvar a descrição do chamado: ${mensagemError.message}`);
+  }
 
   await notificarChamadoCriado(
     {
