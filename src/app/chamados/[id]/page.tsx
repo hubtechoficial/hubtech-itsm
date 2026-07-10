@@ -3,7 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getUsuarioAtual } from "@/lib/usuarios/current";
 import { getSlaStatus, SLA_STATUS_LABEL, SLA_STATUS_COLOR_CLASS } from "@/lib/chamados/sla";
-import { adicionarComentario, vincularArtigo } from "./actions";
+import { adicionarComentario, vincularArtigo, pegarChamado, devolverAFila } from "./actions";
 
 export default async function ChamadoDetalhePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -21,7 +21,7 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
     supabase
       .from("chamados")
       .select(
-        "id, assunto, status, prioridade, sla_prazo_resolucao, resolvido_em, created_at, projetos(nome)",
+        "id, assunto, status, prioridade, sla_prazo_resolucao, resolvido_em, created_at, atribuido_a_usuario_id, projetos(nome), atribuido:atribuido_a_usuario_id(nome)",
       )
       .eq("id", id)
       .maybeSingle(),
@@ -38,8 +38,18 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
   }
 
   const slaStatus = getSlaStatus(chamado);
-  const podeComentar = usuarioAtual?.perfil === "admin" || usuarioAtual?.perfil === "supervisor";
   const ehAdmin = usuarioAtual?.perfil === "admin";
+  const ehTecnico = usuarioAtual?.perfil === "tecnico";
+  const podeComentar = ehAdmin || ehTecnico || usuarioAtual?.perfil === "supervisor";
+  const podeAtender = ehAdmin || ehTecnico;
+
+  type PessoaRef = { nome: string } | { nome: string }[] | null;
+  function nomeDe(pessoa: PessoaRef): string | null {
+    if (!pessoa) return null;
+    return Array.isArray(pessoa) ? (pessoa[0]?.nome ?? null) : pessoa.nome;
+  }
+  const nomeResponsavel = nomeDe(chamado.atribuido as PessoaRef);
+  const chamadoENosso = chamado.atribuido_a_usuario_id === user.id;
 
   type ArtigoRef = { titulo: string } | { titulo: string }[] | null;
   let artigosDisponiveis: { id: string; titulo: string }[] = [];
@@ -71,7 +81,7 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
 
         <h1 className="mt-4 mb-2 text-2xl font-bold">{chamado.assunto}</h1>
 
-        <div className="mb-8 flex flex-wrap gap-2 text-xs">
+        <div className="mb-4 flex flex-wrap gap-2 text-xs">
           <span className="rounded-lg bg-surface px-2 py-1 capitalize text-gray-medium">
             {chamado.status}
           </span>
@@ -82,6 +92,34 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
             {SLA_STATUS_LABEL[slaStatus]}
           </span>
         </div>
+
+        {podeAtender && (
+          <div className="mb-8 flex items-center gap-3 rounded-lg border border-white/10 bg-surface/40 p-4 text-sm">
+            <span className="text-gray-medium">
+              Responsável: <span className="text-white">{nomeResponsavel ?? "— não atribuído —"}</span>
+            </span>
+            {!chamado.atribuido_a_usuario_id && (
+              <form action={pegarChamado.bind(null, id)}>
+                <button
+                  type="submit"
+                  className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold hover:bg-primary-dark"
+                >
+                  Pegar chamado
+                </button>
+              </form>
+            )}
+            {chamadoENosso && (
+              <form action={devolverAFila.bind(null, id)}>
+                <button
+                  type="submit"
+                  className="rounded-md bg-surface px-3 py-1.5 text-xs font-semibold text-gray-medium hover:text-white"
+                >
+                  Devolver à fila
+                </button>
+              </form>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-col gap-4">
           {mensagens?.map((mensagem) => (
