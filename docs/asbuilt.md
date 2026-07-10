@@ -143,11 +143,15 @@ Testado com navegador real (Básico e Técnico criando chamado pelo portal) e ve
 **Bug encontrado e corrigido durante o teste com navegador real:** a Content-Security-Policy adicionada em `next.config.ts` (Fase 06) bloqueava o carregamento das próprias imagens de avatar, hospedadas no Supabase Storage — `img-src` não incluía `https://*.supabase.co`. Corrigido e revalidado (0 erros de console após o ajuste).
 
 ### 🔵 FASE 10: PAINÉIS (DASHBOARDS)
-**Status:** ⏳ Aguardando
-**Progresso:** 0/1 tarefa (0%)
+**Status:** ✅ Concluída
+**Progresso:** 1/1 tarefa (100%)
 
 #### Tarefas:
-- [ ] Dashboard por perfil — cartões coloridos + contagens (Básico: próprios · Supervisor: do Grupo · Técnico: fila do Projeto selecionado · Admin: visão geral)
+- [x] Dashboard por perfil — cartões coloridos + contagens (Básico: próprios · Supervisor: do Grupo · Técnico: fila do Projeto selecionado · Admin: visão geral)
+
+Nova página `/painel`, que passou a ser a tela de entrada (`/` e o login redirecionam pra lá). Cartões de contagem por status (aberto/em andamento/resolvido/fechado) e por SLA (dentro do prazo/atenção/estourado/sem SLA/resolvido). O escopo dos dados por perfil não precisou de filtro explícito na maioria dos casos — o RLS já existente faz o trabalho (Básico só vê os próprios, Supervisor só vê do Grupo, Admin vê tudo); só o Técnico precisa do seletor de Projeto, reaproveitado da tela de fila (Fase 07). Testado com navegador real nos 4 perfis (usuários descartáveis criados e removidos ao final).
+
+**Limpeza feita durante o teste:** o teste de upload de foto da Fase 09 tinha deixado uma imagem de teste (transparente, 1×1px) configurada como avatar real do admin `rafael@hubtech.tec.br` — corrigido (nome e foto restaurados, arquivo removido do Storage).
 
 ### 🔵 FASE 11: ANEXOS
 **Status:** ⏳ Aguardando (SHOULD HAVE — aprovado por Rafael após parecer técnico do Hades)
