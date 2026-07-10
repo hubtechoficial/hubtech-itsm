@@ -127,6 +127,21 @@ export default async function NovoChamadoPage() {
             />
           </div>
 
+          <div className="flex flex-col gap-1">
+            <label htmlFor="anexos" className="text-xs font-semibold uppercase tracking-[2.5px] text-gray-medium">
+              Anexos (opcional)
+            </label>
+            <input
+              id="anexos"
+              name="anexos"
+              type="file"
+              multiple
+              accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,.doc,.docx,.xlsx,.zip"
+              className="text-sm text-gray-medium file:mr-3 file:rounded-md file:border-0 file:bg-surface file:px-3 file:py-2 file:text-sm file:text-white"
+            />
+            <p className="text-xs text-gray-medium">Máximo 10MB por arquivo.</p>
+          </div>
+
           <button
             type="submit"
             className="self-start rounded-md bg-primary px-4 py-2 text-sm font-semibold hover:bg-primary-dark"

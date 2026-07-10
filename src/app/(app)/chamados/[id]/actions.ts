@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { enviarAnexoPortal } from "@/lib/chamados/anexos";
 
 export async function adicionarComentario(chamadoId: string, formData: FormData) {
   const corpo = String(formData.get("corpo") ?? "");
@@ -14,16 +15,30 @@ export async function adicionarComentario(chamadoId: string, formData: FormData)
 
   if (!user) throw new Error("Não autenticado.");
 
-  const { error } = await supabase.from("chamado_mensagens").insert({
-    chamado_id: chamadoId,
-    autor_usuario_id: user.id,
-    autor_email: user.email,
-    corpo,
-    canal: "portal",
-  });
+  const { data: mensagem, error } = await supabase
+    .from("chamado_mensagens")
+    .insert({
+      chamado_id: chamadoId,
+      autor_usuario_id: user.id,
+      autor_email: user.email,
+      corpo,
+      canal: "portal",
+    })
+    .select("id")
+    .single();
 
-  if (error) {
-    throw new Error(`Não foi possível adicionar o comentário: ${error.message}`);
+  if (error || !mensagem) {
+    throw new Error(`Não foi possível adicionar o comentário: ${error?.message}`);
+  }
+
+  const anexos = formData.getAll("anexos").filter((a): a is File => a instanceof File && a.size > 0);
+  for (const arquivo of anexos) {
+    await enviarAnexoPortal(supabase, {
+      chamadoId,
+      mensagemId: mensagem.id,
+      usuarioId: user.id,
+      arquivo,
+    });
   }
 
   revalidatePath(`/chamados/${chamadoId}`);

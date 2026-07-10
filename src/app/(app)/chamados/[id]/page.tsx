@@ -3,7 +3,14 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getUsuarioAtual } from "@/lib/usuarios/current";
 import { getSlaStatus, SLA_STATUS_LABEL, SLA_STATUS_COLOR_CLASS } from "@/lib/chamados/sla";
+import { BUCKET_ANEXOS } from "@/lib/chamados/anexos";
 import { adicionarComentario, vincularArtigo, pegarChamado, devolverAFila } from "./actions";
+
+function formatarTamanho(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 export default async function ChamadoDetalhePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -17,7 +24,7 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
     redirect("/login");
   }
 
-  const [{ data: chamado }, { data: mensagens }, usuarioAtual] = await Promise.all([
+  const [{ data: chamado }, { data: mensagens }, { data: anexosBrutos }, usuarioAtual] = await Promise.all([
     supabase
       .from("chamados")
       .select(
@@ -30,11 +37,31 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
       .select("id, autor_email, canal, corpo, created_at")
       .eq("chamado_id", id)
       .order("created_at", { ascending: true }),
+    supabase
+      .from("chamado_anexos")
+      .select("id, mensagem_id, nome_arquivo, tamanho_bytes, caminho_storage")
+      .eq("chamado_id", id),
     getUsuarioAtual(),
   ]);
 
   if (!chamado) {
     notFound();
+  }
+
+  const anexosPorMensagem = new Map<string, { id: string; nomeArquivo: string; tamanhoBytes: number; url: string | null }[]>();
+  for (const anexo of anexosBrutos ?? []) {
+    if (!anexo.mensagem_id) continue;
+    const { data: assinado } = await supabase.storage
+      .from(BUCKET_ANEXOS)
+      .createSignedUrl(anexo.caminho_storage, 300);
+    const lista = anexosPorMensagem.get(anexo.mensagem_id) ?? [];
+    lista.push({
+      id: anexo.id,
+      nomeArquivo: anexo.nome_arquivo,
+      tamanhoBytes: anexo.tamanho_bytes,
+      url: assinado?.signedUrl ?? null,
+    });
+    anexosPorMensagem.set(anexo.mensagem_id, lista);
   }
 
   const slaStatus = getSlaStatus(chamado);
@@ -138,6 +165,27 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
                 <span>{new Date(mensagem.created_at).toLocaleString("pt-BR")}</span>
               </div>
               <p className="whitespace-pre-wrap text-sm">{mensagem.corpo}</p>
+              {(anexosPorMensagem.get(mensagem.id)?.length ?? 0) > 0 && (
+                <ul className="mt-3 flex flex-col gap-1 border-t border-white/10 pt-3">
+                  {anexosPorMensagem.get(mensagem.id)!.map((anexo) => (
+                    <li key={anexo.id} className="text-xs">
+                      {anexo.url ? (
+                        <a
+                          href={anexo.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline"
+                        >
+                          📎 {anexo.nomeArquivo}
+                        </a>
+                      ) : (
+                        <span className="text-gray-medium">📎 {anexo.nomeArquivo}</span>
+                      )}
+                      <span className="text-gray-medium"> ({formatarTamanho(anexo.tamanhoBytes)})</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
         </div>
@@ -153,6 +201,14 @@ export default async function ChamadoDetalhePage({ params }: { params: Promise<{
               required
               rows={4}
               className="rounded-md border border-white/10 bg-surface px-3 py-2 text-sm outline-none focus:border-primary"
+            />
+            <input
+              id="anexos-comentario"
+              name="anexos"
+              type="file"
+              multiple
+              accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,.doc,.docx,.xlsx,.zip"
+              className="text-sm text-gray-medium file:mr-3 file:rounded-md file:border-0 file:bg-surface file:px-3 file:py-2 file:text-sm file:text-white"
             />
             <button
               type="submit"

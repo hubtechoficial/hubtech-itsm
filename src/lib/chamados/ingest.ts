@@ -2,8 +2,17 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createResendClient } from "@/lib/resend/client";
 import { inferPrioridade } from "@/lib/chamados/priority";
 import { notificarChamadoCriado } from "@/lib/chamados/notify";
+import { BUCKET_ANEXOS, TAMANHO_MAXIMO_ANEXO, TIPOS_ANEXO_PERMITIDOS } from "@/lib/chamados/anexos";
+
+interface InboundAttachmentRef {
+  id: string;
+  filename: string | null;
+  size: number;
+  content_type: string;
+}
 
 interface InboundEmail {
+  emailId: string;
   from: string;
   subject: string;
   messageId: string;
@@ -11,6 +20,7 @@ interface InboundEmail {
   references: string[];
   text: string | null;
   html: string | null;
+  attachments: InboundAttachmentRef[];
 }
 
 function extractEmailAddress(from: string): string {
@@ -35,15 +45,20 @@ function parseReferences(raw: string | null): string[] {
   return raw.split(/\s+/).map((id) => id.trim()).filter(Boolean);
 }
 
-export function buildInboundEmail(receivedEmail: {
-  from: string;
-  subject: string;
-  message_id: string;
-  headers: Record<string, string> | null;
-  text: string | null;
-  html: string | null;
-}): InboundEmail {
+export function buildInboundEmail(
+  emailId: string,
+  receivedEmail: {
+    from: string;
+    subject: string;
+    message_id: string;
+    headers: Record<string, string> | null;
+    text: string | null;
+    html: string | null;
+    attachments: InboundAttachmentRef[];
+  },
+): InboundEmail {
   return {
+    emailId,
     from: receivedEmail.from,
     subject: receivedEmail.subject,
     messageId: receivedEmail.message_id,
@@ -51,7 +66,54 @@ export function buildInboundEmail(receivedEmail: {
     references: parseReferences(getHeader(receivedEmail.headers, "References")),
     text: receivedEmail.text,
     html: receivedEmail.html,
+    attachments: receivedEmail.attachments ?? [],
   };
+}
+
+/** Baixa cada anexo do e-mail recebido (via URL assinada da Resend) e sobe pro Storage. */
+async function processarAnexosEmail(
+  supabase: ReturnType<typeof createAdminClient>,
+  email: InboundEmail,
+  chamadoId: string,
+  mensagemId: string,
+) {
+  if (email.attachments.length === 0) return;
+
+  const resend = createResendClient();
+
+  for (const attachment of email.attachments) {
+    if (attachment.size > TAMANHO_MAXIMO_ANEXO || !TIPOS_ANEXO_PERMITIDOS.has(attachment.content_type)) {
+      continue;
+    }
+
+    const { data: attachmentData, error: attachmentError } = await resend.emails.receiving.attachments.get({
+      emailId: email.emailId,
+      id: attachment.id,
+    });
+    if (attachmentError || !attachmentData) continue;
+
+    const response = await fetch(attachmentData.download_url);
+    if (!response.ok) continue;
+    const buffer = Buffer.from(await response.arrayBuffer());
+
+    const nomeArquivo = attachment.filename || `anexo-${attachment.id}`;
+    const caminho = `${chamadoId}/${crypto.randomUUID()}-${nomeArquivo}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(BUCKET_ANEXOS)
+      .upload(caminho, buffer, { contentType: attachment.content_type });
+    if (uploadError) continue;
+
+    await supabase.from("chamado_anexos").insert({
+      chamado_id: chamadoId,
+      mensagem_id: mensagemId,
+      nome_arquivo: nomeArquivo,
+      tipo_conteudo: attachment.content_type,
+      tamanho_bytes: attachment.size,
+      caminho_storage: caminho,
+      origem: "email",
+    });
+  }
 }
 
 const SUPPORT_EMAIL = process.env.SUPPORT_INBOUND_EMAIL || "suporte@chamados.hubtech.tec.br";
@@ -90,15 +152,21 @@ export async function processInboundEmail(email: InboundEmail) {
   }
 
   if (chamadoId) {
-    const { error: mensagemError } = await supabase.from("chamado_mensagens").insert({
-      chamado_id: chamadoId,
-      autor_email: senderAddress,
-      corpo: email.text ?? email.html ?? "",
-      canal: "email",
-    });
-    if (mensagemError) {
-      throw new Error(`Falha ao registrar mensagem: ${mensagemError.message}`);
+    const { data: mensagem, error: mensagemError } = await supabase
+      .from("chamado_mensagens")
+      .insert({
+        chamado_id: chamadoId,
+        autor_email: senderAddress,
+        corpo: email.text ?? email.html ?? "",
+        canal: "email",
+      })
+      .select("id")
+      .single();
+    if (mensagemError || !mensagem) {
+      throw new Error(`Falha ao registrar mensagem: ${mensagemError?.message}`);
     }
+
+    await processarAnexosEmail(supabase, email, chamadoId, mensagem.id);
 
     return { status: "threaded" as const, chamadoId };
   }
@@ -131,15 +199,21 @@ export async function processInboundEmail(email: InboundEmail) {
     throw new Error(`Falha ao criar chamado: ${error?.message}`);
   }
 
-  const { error: mensagemError } = await supabase.from("chamado_mensagens").insert({
-    chamado_id: novoChamado.id,
-    autor_email: senderAddress,
-    corpo: email.text ?? email.html ?? "",
-    canal: "email",
-  });
-  if (mensagemError) {
-    throw new Error(`Falha ao registrar mensagem: ${mensagemError.message}`);
+  const { data: novaMensagem, error: mensagemError } = await supabase
+    .from("chamado_mensagens")
+    .insert({
+      chamado_id: novoChamado.id,
+      autor_email: senderAddress,
+      corpo: email.text ?? email.html ?? "",
+      canal: "email",
+    })
+    .select("id")
+    .single();
+  if (mensagemError || !novaMensagem) {
+    throw new Error(`Falha ao registrar mensagem: ${mensagemError?.message}`);
   }
+
+  await processarAnexosEmail(supabase, email, novoChamado.id, novaMensagem.id);
 
   await notificarChamadoCriado(
     {

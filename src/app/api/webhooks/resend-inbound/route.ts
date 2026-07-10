@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "falha ao buscar conteúdo do e-mail" }, { status: 502 });
   }
 
-  const inboundEmail = buildInboundEmail(receivedEmail);
+  const inboundEmail = buildInboundEmail(event.data.email_id, receivedEmail);
   const resultado = await processInboundEmail(inboundEmail);
 
   return NextResponse.json(resultado);

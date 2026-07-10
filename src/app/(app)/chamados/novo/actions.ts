@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUsuarioAtual, getProjetosTecnico } from "@/lib/usuarios/current";
 import { inferPrioridade } from "@/lib/chamados/priority";
 import { notificarChamadoCriado } from "@/lib/chamados/notify";
+import { enviarAnexoPortal } from "@/lib/chamados/anexos";
 
 export async function criarChamadoPortal(formData: FormData) {
   const usuarioAtual = await getUsuarioAtual();
@@ -79,16 +80,30 @@ export async function criarChamadoPortal(formData: FormData) {
     throw new Error(`Não foi possível criar o chamado: ${error?.message}`);
   }
 
-  const { error: mensagemError } = await supabase.from("chamado_mensagens").insert({
-    chamado_id: novoChamado.id,
-    autor_usuario_id: usuarioAtual.id,
-    autor_email: usuarioAtual.email,
-    corpo: descricao,
-    canal: "portal",
-  });
+  const { data: novaMensagem, error: mensagemError } = await supabase
+    .from("chamado_mensagens")
+    .insert({
+      chamado_id: novoChamado.id,
+      autor_usuario_id: usuarioAtual.id,
+      autor_email: usuarioAtual.email,
+      corpo: descricao,
+      canal: "portal",
+    })
+    .select("id")
+    .single();
 
-  if (mensagemError) {
-    throw new Error(`Não foi possível salvar a descrição do chamado: ${mensagemError.message}`);
+  if (mensagemError || !novaMensagem) {
+    throw new Error(`Não foi possível salvar a descrição do chamado: ${mensagemError?.message}`);
+  }
+
+  const anexos = formData.getAll("anexos").filter((a): a is File => a instanceof File && a.size > 0);
+  for (const arquivo of anexos) {
+    await enviarAnexoPortal(supabase, {
+      chamadoId: novoChamado.id,
+      mensagemId: novaMensagem.id,
+      usuarioId: usuarioAtual.id,
+      arquivo,
+    });
   }
 
   await notificarChamadoCriado(
