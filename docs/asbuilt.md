@@ -3,7 +3,7 @@
 **Descrição:** Sistema de ITSM multi-tenant para os contratos de terceirização de suporte da Hub Tech. Chamados entram por e-mail institucional ou portal, ficam isolados por Projeto (contrato), com SLA configurável, fila de atendimento por Técnico e portal com 4 perfis de acesso.
 **Stack:** Next.js + Supabase (Postgres + Auth + RLS + Storage) + Vercel + Resend (e-mail transacional e recebimento) + GitHub (`hubtechoficial/hubtech-itsm`)
 **Última atualização:** 2026-07-10
-**Status geral:** 🎉 V1 em produção · 🟡 V1.1 em planejamento (perfil Técnico, portal de abertura, painéis, anexos)
+**Status geral:** 🎉 V1.1 em produção (perfil Técnico, portal de abertura, painéis, navegação, anexos)
 
 ## Roadmap de Implementação
 
@@ -168,14 +168,18 @@ Nova página `/painel`, que passou a ser a tela de entrada (`/` e o login redire
 **🟡 Pendência de validação:** a captura de anexo vindo por e-mail não pôde ser testada ponta-a-ponta (precisa de um e-mail real recebido pela Resend com anexo — mesma limitação já registrada na validação da Fase 02). Os caminhos de erro (anexo grande demais, tipo não permitido) foram cobertos por revisão de código. Recomendo Rafael enviar um e-mail de teste real com um anexo antes da Fase 12 (Produção) para fechar essa validação.
 
 ### 🔵 FASE 12: PRODUÇÃO (FINAL DA V1.1)
-**Status:** ⏳ Aguardando
-**Progresso:** 0/4 tarefas (0%)
+**Status:** ✅ Concluída
+**Progresso:** 4/4 tarefas (100%)
 
 #### Tarefas:
-- [ ] QA funcional completo (Ravena)
-- [ ] Auditoria de segurança (Kerberos) — atenção especial ao RLS do perfil Técnico e às policies do Storage
-- [ ] Merge `dev → hml → main`
-- [ ] Deploy em produção (Vercel)
+- [x] QA funcional completo (Ravena) — aprovado, navegador real nos 4 perfis (Básico/Supervisor/Técnico/Admin), responsividade em mobile/tablet/desktop, console/rede limpos, acessibilidade básica ok, performance ok (<100ms). 1 bug encontrado e corrigido: header quebrava feio em 375px (título + nav + menu de perfil competindo na mesma linha sem wrap) — corrigido com `flex-wrap` + `whitespace-nowrap`, reconfirmado.
+- [x] Auditoria de segurança (Kerberos) — aprovado. RLS 100% habilitado em todas as 9 tabelas públicas, funções `SECURITY DEFINER` com `search_path` fixo, 0 achados no Semgrep (114 regras OWASP/React/JS), sem secrets no código/histórico git, headers de segurança completos, XSS/CSRF/IDOR testados com payload e sessão reais (todos bloqueados), CVE-2025-29927 não se aplica (Next.js 16.2.10). 1 achado de *defense-in-depth* corrigido: o role `anon` (visitante sem login) tinha GRANT de `UPDATE` em todas as colunas de `usuarios`, incluindo `perfil` — grant padrão do Supabase nunca revogado. Não era explorável (RLS já bloqueava, verificado com teste de exploit real), mas foi fechado mesmo assim (migration `0013`).
+- [x] Merge `dev → hml → main` — tags de backup criadas antes de cada etapa (`backup-pre-hml-20260710-174400`, `backup-pre-main-20260710-175040`), confirmação explícita de Rafael ("CONFIRMAR PRODUÇÃO") obtida antes do merge final
+- [x] Deploy em produção (Vercel) — build automático concluído em 29s, testado direto na URL de produção com navegador real: login, Painel, Chamados e logout funcionando, 0 erros de console
+
+**🎉 V1.1 do Hub Tech ITSM está no ar:** https://hubtech-itsm-hub-tech-oficial.vercel.app
+
+**🟡 Pendência ainda em aberto:** a captura de anexo vindo por e-mail (Fase 11) não foi validada ponta a ponta com um e-mail real — recomendado testar assim que possível.
 
 ## Histórico de Sessões
 | Data | O que foi feito |
@@ -183,4 +187,4 @@ Nova página `/painel`, que passou a ser a tela de entrada (`/` e o login redire
 | 2026-07-08 | Shiva conduziu Descoberta completa e formalizou spec (projeto.md, moscow.md, design-system.json). Hades recebeu a spec e definiu stack + roadmap faseado. |
 | 2026-07-08 | Atlas executou e concluiu a Fase 01: repositório GitHub, scaffold Next.js, Supabase (schema + RLS aplicados em produção), design tokens, autenticação, Vercel linkado com env vars, GitFlow (dev/hml/main) publicado. |
 | 2026-07-09 | Fases 02 a 05 concluídas (ingestão por e-mail, SLA/notificações, portal com 3 perfis, Base de Conhecimento). Ravena aprovou QA com navegador real (1 bug de mobile corrigido). Kerberos aprovou segurança após corrigir 1 falha crítica de escalação de privilégio e 2 importantes. Merge `dev → hml → main` com aprovação explícita de Rafael. Deploy em produção concluído após resolver bloqueio de Deployment Protection do Vercel. **V1 do Hub Tech ITSM está no ar.** |
-| 2026-07-10 | Rafael trouxe feedback pós-lançamento usando o Jira como referência. Shiva conduziu nova Descoberta: perfil Técnico (multi-Projeto), abertura de chamado pelo portal pra todos, painéis por perfil, navegação com seletor de Projeto, menu de perfil. Hades avaliou viabilidade de anexos (aprovado como SHOULD HAVE, Supabase Storage, custo zero) e definiu roadmap da V1.1 (Fases 07-12), aprovado por Rafael. Atlas concluiu as Fases 07, 08 e 09 (perfil Técnico, portal de abertura, navegação/menu de perfil/configurações), com testes reais de navegador em cada uma e 3 bugs encontrados e corrigidos ao longo do caminho (RLS de projetos pro Técnico, CSP bloqueando avatar, e a proteção proativa contra auto-promoção via UPDATE). |
+| 2026-07-10 | Rafael trouxe feedback pós-lançamento usando o Jira como referência. Shiva conduziu nova Descoberta: perfil Técnico (multi-Projeto), abertura de chamado pelo portal pra todos, painéis por perfil, navegação com seletor de Projeto, menu de perfil. Hades avaliou viabilidade de anexos (aprovado como SHOULD HAVE, Supabase Storage, custo zero) e definiu roadmap da V1.1 (Fases 07-12), aprovado por Rafael. Atlas concluiu as Fases 07 a 11 (perfil Técnico, portal de abertura, navegação/menu de perfil/configurações, painéis, anexos), com testes reais de navegador em cada uma e vários bugs encontrados e corrigidos ao longo do caminho (RLS de projetos pro Técnico, CSP bloqueando avatar, mensagem inicial do Básico descartada pelo RLS, entre outros). Ravena aprovou QA final (1 bug de mobile corrigido). Kerberos aprovou segurança (1 gap de defense-in-depth fechado: GRANT de UPDATE do role `anon` em `usuarios`). Merge `dev → hml → main` com confirmação explícita de Rafael. **V1.1 do Hub Tech ITSM está no ar.** |
